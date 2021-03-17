@@ -1,0 +1,32 @@
+{
+  "name": "ui-gesture-control",
+  "version": "1.0.0",
+  "description": "Controlling a web based UI with Arduino Nano 33 BLE",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uiowa-iot-team10/ui-gesture-control.git"
+  },
+  "keywords": [
+    "ui",
+    "arduino",
+    "ble",
+    "gesture"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uiowa-iot-team10/ui-gesture-control/issues"
+  },
+  "homepage": "https://github.com/uiowa-iot-team10/ui-gesture-control#readme",
+  "dependencies": {
+    "events": "^3.3.0",
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.0.0"
+  }
+}
