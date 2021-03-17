@@ -29,7 +29,7 @@
                 gesture.innerHTML = data;
             }
 
-            var socket = io.connect('http://localhost:80');
+            var socket = io.connect('http://raspberrypi.local:80');
             socket.on('connection', function(data){
                 var status = document.getElementById("status");
                 status.setAttribute("class", "connected");
