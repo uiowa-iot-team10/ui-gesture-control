@@ -57,7 +57,7 @@ void setup() {
   }
 
   // set the local name peripheral advertises
-  BLE.setLocalName("ButtonLED");
+  BLE.setLocalName("GestureSense");
   // set the UUID for the service this peripheral advertises:
   BLE.setAdvertisedService(ledService);
 
