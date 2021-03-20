@@ -1,17 +1,11 @@
-#!/usr/bin/env python3
-
-"""
-This Python script generates random gestures in every 2 seconds.
-
-This can be updated to be used with Arduino Gesture sensor over BLE.
-"""
-
 import os
 import sys
 import struct
 import socketio
 from bluepy import btle
 from sense_hat import SenseHat
+import asyncio
+from bleak import BleakScanner
 
 GESTURES = {
     0: "UP",
@@ -20,6 +14,7 @@ GESTURES = {
     3: "RIGHT"
 }
 PORT = 9999
+
 
 class MyDelegate(btle.DefaultDelegate):
     def __init__(self, hndl, sio, sense):
@@ -39,6 +34,18 @@ class MyDelegate(btle.DefaultDelegate):
         else:
             print("[LOG] handleNotification handle 0x%04X unknown" % (cHandle))
 
+# Scanning for discoverable BLE devices and setting MAC address to the "GestureSense" device
+async def run():
+    global MAC
+    devices = await BleakScanner.discover()
+    for d in devices:
+        if (d.name == "GestureSense"):
+            MAC = d.address
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(run())
+
 def main():
     sio = socketio.Client()
     @sio.event
@@ -52,10 +59,9 @@ def main():
     sio.connect('http://localhost:{}'.format(PORT))
 
     sense = SenseHat()
-    ble_bt840_eval_board_max = "5A:6B:31:73:71:00"
-    print("[LOG] Connecting to BLE device MAC: " + ble_bt840_eval_board_max)
+    print("[LOG] Connecting to BLE device MAC: " + MAC)
 
-    per = btle.Peripheral("5A:6B:31:73:71:00")
+    per = btle.Peripheral(MAC)
     services = per.getServices()
     svc = per.getServiceByUUID(list(services)[2].uuid)
     ble_characteristic = svc.getCharacteristics()[1]
