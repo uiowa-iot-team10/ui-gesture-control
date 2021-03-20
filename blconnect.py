@@ -42,10 +42,6 @@ async def run():
         if (d.name == "GestureSense"):
             MAC = d.address
 
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run())
-
 def main():
     sio = socketio.Client()
     @sio.event
@@ -87,4 +83,6 @@ def main():
         print("[LOG] Waiting for notifications...")
 
 if (__name__ == "__main__"):
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run())
     main()
