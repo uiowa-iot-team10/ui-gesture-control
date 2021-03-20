@@ -33,12 +33,12 @@ const int piezoPin = 2;
 BLEService ledService("19B10010-E8F2-537E-4F6C-D104768A1214"); // create service
 
 
-BLEFloatCharacteristic gyroXChar("19B10011-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead);
-BLEIntCharacteristic movementChar("19B10012-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead);
+BLEFloatCharacteristic gyroXChar("19B10011-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead | BLENotify);
+BLEIntCharacteristic movementChar("19B10012-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead | BLENotify);
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+  // while (!Serial);
 
   pinMode(ledPin, OUTPUT); // use the LED as an output
   pinMode(buttonPin, INPUT); // use button pin as an input
