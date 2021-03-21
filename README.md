@@ -67,7 +67,7 @@ $ sudo apt-get install tmux
 3. `CTRL + B`, then `D`. (Deattaching)
 4. Then, you can go to `http://localhost` from your browser.
 5. Create another Tmux window: `$ tmux new -s script`
-6. Run the gesture script `$ python3 get_gesture.py` or `$ ./get_gesture.py`
+6. Run the gesture script `$ python3 blconnect.py` or `$ ./blconnect.py`
 7. `CTRL + B`, then `D`. (Deattaching)
 
 Now, you should be able to see both Server and Script connected on the browser, and every gesture should appear on the webpage. (UP, DOWN, LEFT or RIGHT)
