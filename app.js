@@ -1,35 +1,29 @@
-const express    = require('express');
-const app        = express();
+const app = require('express')();
+const http_script = require('http').Server(app);
+const http_client = require('http').Server(app);
+const io_script = require('socket.io')(http_script);
+const io_client = require('socket.io')(http_client);
+const SCRIPT_PORT = process.env.PORT || 9999;
+const CLIENT_PORT = process.env.PORT || 80;
+var script_connected = false;
+
 var EventEmitter = require('events');
 EventEmitter.defaultMaxListeners = 20;
 var events = new EventEmitter();
 events.setMaxListeners(20);
 
-var SCRIPT_PORT  = 9999;
-var CLIENT_PORT  = 80;
-
-var http1 = require('http').createServer(app);
-var http2 = require('http').createServer(app);
-var sio   = require('socket.io');
-var psio  = sio(http1);
-var csio  = sio(http2);
-var script_connected = false;
-
 // To make other files accessible
-app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+  });
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
     res.status(404).send("Sorry, that route doesn't exist.");
 });
 
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/index.html');
-});
-
-
 // Socket stuff
-csio.on('connection', function(socket){
+io_client.on('connection', (socket) => {
     console.log("A user is connected to server.");
     socket.emit("connection", "Connected!");
     socket.emit("script-status", script_connected);
@@ -44,7 +38,7 @@ csio.on('connection', function(socket){
     });
 });
 
-psio.on('connection', function(socket){
+io_script.on('connection', (socket) => {
     console.log("Python script is connected to server.");
     script_connected = true;
     events.emit("script-status", script_connected);
@@ -60,10 +54,10 @@ psio.on('connection', function(socket){
     })
 });
 
-http1.listen(SCRIPT_PORT, function() {
+http_script.listen(SCRIPT_PORT, () => {
 	console.log('listening for python script on *:' + SCRIPT_PORT);
 });
 
-http2.listen(CLIENT_PORT, function() {
+http_client.listen(CLIENT_PORT, () => {
 	console.log('listening for client side on *:' + CLIENT_PORT);
 });
