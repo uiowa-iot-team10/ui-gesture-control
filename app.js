@@ -4,7 +4,7 @@ const http_client = require('http').Server(app);
 const io_script = require('socket.io')(http_script);
 const io_client = require('socket.io')(http_client);
 const SCRIPT_PORT = process.env.PORT || 9999;
-const CLIENT_PORT = process.env.PORT || 80;
+const CLIENT_PORT = process.env.PORT || 8080;
 var script_connected = false;
 
 var EventEmitter = require('events');

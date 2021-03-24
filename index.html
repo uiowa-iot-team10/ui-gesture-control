@@ -69,23 +69,19 @@
         width: 100px;
         height: 100px;
         border-radius: 20%;
-        margin-right: 15px;
+        margin-right: 1%;
         cursor: pointer;
         border: 0px solid #576170;
-        color: white;
       }
       #game-nav .game:hover{
         border: 2px solid #576170;
       }
       #game-nav .game:focus{
+        outline: none;
         overflow: visible;
         width: 150px;
         height: 150px;
         border: 2px solid #576170;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative; 
       }
 
       #info{
@@ -165,6 +161,7 @@
       {
       game_array[i].setAttribute('tabindex', '0');
       }
+      
       var index = 0;
       focus;
 
