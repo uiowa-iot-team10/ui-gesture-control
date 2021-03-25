@@ -16,10 +16,11 @@ var GESTURES = {
     3: "RIGHT"
 };
 
-const ARDUINO_BLUETOOTH_ADDR       = '5A:6B:31:73:71:00';
+var ARDUINO_BLUETOOTH_ADDR         = '';
 const DATA_SERVICE_UUID            = '19B10010-E8F2-537E-4F6C-D104768A1214';
 const GYROX_CHARACTERISTIC_UUID    = '19B10011-E8F2-537E-4F6C-D104768A1214';
 const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
+let list_of_devices = 0;
 
 var http1 = require('http').createServer(app);
 var http2 = require('http').createServer(app);
@@ -40,43 +41,65 @@ app.get('/', function(req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
 
-async function setBLE() {
-    // Reference the BLE adapter and begin device discovery...
-    const { bluetooth, destroy } = createBluetooth();
-    const adapter = await bluetooth.defaultAdapter();
-    const discovery =  await adapter.startDiscovery();
-    console.log( '[LOG] discovering...' );
 
-    // Attempt to connect to the device with specified BT address
-    const device = await adapter.waitDevice( ARDUINO_BLUETOOTH_ADDR.toUpperCase() );
-    console.log( '[LOG] found device. attempting connection...' );
-    await device.connect();
-    console.log( '[LOG] connected to device!' );
+// function now automatically connects to BLE Device(Arduino 33 BLE Sense) via bluetooth.
+ async function setBLE() {
+     // Reference the BLE adapter and begin device discovery...
+     const { bluetooth, destroy } = createBluetooth();
+     const adapter = await bluetooth.defaultAdapter();
+     await adapter.startDiscovery();
+     const list_devices = await adapter.devices().then(function(result){
+             list_of_devices = result;
+     });
+     for(const user_mac of list_of_devices)
+     {
+         const x = (await adapter.getDevice(user_mac)).getName().then(function(result){
+             console.log(result);
+             if(result == "GestureSense")
+             {
+                ARDUINO_BLUETOOTH_ADDR = user_mac;
+                 adapter.stopDiscovery();
+             }
+         }).catch(function(err)
+         {
+             //console.log(err);
+         });
 
-    // Get references to the desired UART service and its characteristics
-    const gattServer = await device.gatt();
-    const dataService = await gattServer.getPrimaryService( DATA_SERVICE_UUID.toLowerCase() );
-    const gyroXChar = await dataService.getCharacteristic( GYROX_CHARACTERISTIC_UUID.toLowerCase() );
-    const movementChar = await dataService.getCharacteristic( MOVEMENT_CHARACTERISTIC_UUID.toLowerCase() );
+     }
+    
+     console.log( '[LOG] discovering...' );
+     const device = await adapter.getDevice(ARDUINO_BLUETOOTH_ADDR);
 
-    // Register for notifications on the RX characteristic
-    await movementChar.startNotifications( );
+    
+     console.log( '[LOG] found device. attempting connection...');
+     await device.connect();
+     console.log( '[LOG] connected to device!' );
+ 
+     // Get references to the desired UART service and its characteristics
+     const gattServer = await device.gatt();
+     const dataService = await gattServer.getPrimaryService( DATA_SERVICE_UUID.toLowerCase() );
+     const gyroXChar = await dataService.getCharacteristic( GYROX_CHARACTERISTIC_UUID.toLowerCase() );
+     const movementChar = await dataService.getCharacteristic( MOVEMENT_CHARACTERISTIC_UUID.toLowerCase() );
 
-    // Callback for when data is received on RX characteristic
-    movementChar.on( 'valuechanged', buffer =>
-    {
-        console.log('Data is received from Arduino: ' + GESTURES[buffer[0]]);
-        events.emit("gesture", GESTURES[buffer[0]]);
-    });
-}
+     // Register for notifications on the RX characteristic
+     await movementChar.startNotifications( );
 
-setBLE().then((ret) =>
-{
-    if (ret) console.log( ret );
-}).catch((err) =>
-{
-    if (err) console.error( err );
-});
+     // Callback for when data is received on RX characteristic
+     movementChar.on( 'valuechanged', buffer =>
+     {
+         console.log('Data is received from Arduino: ' + GESTURES[buffer[0]]);
+         events.emit("gesture", GESTURES[buffer[0]]);
+     });
+ }
+
+ setBLE().then((ret) =>
+ {
+     if (ret) console.log( ret );
+ }).catch((err) =>
+ {
+     if (err) console.error(  );
+ });
+
 
 // Socket stuff
 csio.on('connection', function(socket){
