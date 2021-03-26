@@ -1,32 +1,33 @@
+const app                 = require('express')();
+var http_client           = require('http').createServer(app);
+var sio                   = require('socket.io');
+var io_client             = sio(http_client);
 const { createBluetooth } = require( 'node-ble' );
-const express    = require('express');
-const app        = express();
+
 var EventEmitter = require('events');
 EventEmitter.defaultMaxListeners = 20;
 var events = new EventEmitter();
 events.setMaxListeners(20);
 
-var CLIENT_PORT  = 80;
 
-var GESTURES = {
+var CLIENT_PORT = process.env.PORT || 80;
+var GESTURES    = {
     0: "UP",
     1: "DOWN",
     2: "LEFT",
     3: "RIGHT"
 };
 
+let list_of_devices                = 0;
 var ARDUINO_BLUETOOTH_ADDR         = '';
 const DATA_SERVICE_UUID            = '19B10010-E8F2-537E-4F6C-D104768A1214';
 const GYROX_CHARACTERISTIC_UUID    = '19B10011-E8F2-537E-4F6C-D104768A1214';
 const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
-let list_of_devices = 0;
-
-var http  = require('http').createServer(app);
-var sio   = require('socket.io');
-var csio  = sio(http);
 
 // To make other files accessible
-app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+  });
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
@@ -39,7 +40,7 @@ app.get('/test', function(req, res) {
 
 
 // function now automatically connects to BLE Device(Arduino 33 BLE Sense) via bluetooth.
- async function setBLE() {
+async function setBLE() {
      // Reference the BLE adapter and begin device discovery...
      const { bluetooth, destroy } = createBluetooth();
      const adapter = await bluetooth.defaultAdapter();
@@ -87,17 +88,17 @@ app.get('/test', function(req, res) {
      });
  }
 
- setBLE().then((ret) =>
- {
-     if (ret) console.log( ret );
- }).catch((err) =>
- {
-     if (err) console.error(  );
- });
+setBLE().then((ret) =>
+{
+    if (ret) console.log( ret );
+}).catch((err) =>
+{
+    if (err) console.error(  );
+});
 
 
 // Socket stuff
-csio.on('connection', function(socket){
+io_client.on('connection', function(socket){
     console.log("[LOG] A user is connected to server.");
     socket.emit("connection", "Connected!");
 
@@ -107,6 +108,6 @@ csio.on('connection', function(socket){
     });
 });
 
-http.listen(CLIENT_PORT, function() {
+http_client.listen(CLIENT_PORT, function() {
 	console.log('[LOG] Listening for client side on *:' + CLIENT_PORT);
 });
