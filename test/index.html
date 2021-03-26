@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src="socket.io/socket.io.js"></script>
+        <script src="http://raspberrypi.local/socket.io/socket.io.js"></script>
         <style>
             .connected {
                 color: green;
@@ -42,13 +42,6 @@
                 status.innerHTML = "Server: Not Connected!";
             });
 
-            socket.on('script-status', function(data){
-                var status = document.getElementById("python");
-                status.setAttribute("class", data ? "connected" : "notconnected");
-                if (data) status.innerHTML = "Script: Connected!";
-                else status.innerHTML = "Script: Not Connected!";
-            });
-
             socket.on('gesture', function(data){
                 console.log(data);
                 updateGesture(data);
@@ -58,7 +51,6 @@
     <body id="body">
         <h1>UI Gesture Page</h2>
         <p id="status" class="notconnected">Server: Not Connected!</p>
-        <p id="python" class="notconnected">Script: Not Connected!</p>
         <label for="gesture">Your gesture:</label>
         <p id="gesture">None</p>
     </body>

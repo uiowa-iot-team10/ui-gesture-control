@@ -6,7 +6,6 @@ EventEmitter.defaultMaxListeners = 20;
 var events = new EventEmitter();
 events.setMaxListeners(20);
 
-var SCRIPT_PORT  = 9999;
 var CLIENT_PORT  = 80;
 
 var GESTURES = {
@@ -22,12 +21,9 @@ const GYROX_CHARACTERISTIC_UUID    = '19B10011-E8F2-537E-4F6C-D104768A1214';
 const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
 let list_of_devices = 0;
 
-var http1 = require('http').createServer(app);
-var http2 = require('http').createServer(app);
+var http  = require('http').createServer(app);
 var sio   = require('socket.io');
-var psio  = sio(http1);
-var csio  = sio(http2);
-var script_connected = false;
+var csio  = sio(http);
 
 // To make other files accessible
 app.use(express.static(__dirname));
@@ -37,8 +33,8 @@ app.use(function(req, res, next) {
     res.status(404).send("Sorry, that route doesn't exist.");
 });
 
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + '/index.html');
+app.get('/test', function(req, res) {
+	res.sendFile(__dirname + '/test/index.html');
 });
 
 
@@ -54,7 +50,7 @@ app.get('/', function(req, res) {
      for(const user_mac of list_of_devices)
      {
          const x = (await adapter.getDevice(user_mac)).getName().then(function(result){
-             console.log(result);
+             console.log("[DEVICE] " + result);
              if(result == "GestureSense")
              {
                 ARDUINO_BLUETOOTH_ADDR = user_mac;
@@ -66,15 +62,14 @@ app.get('/', function(req, res) {
          });
 
      }
-    
+
      console.log( '[LOG] discovering...' );
      const device = await adapter.getDevice(ARDUINO_BLUETOOTH_ADDR);
 
-    
      console.log( '[LOG] found device. attempting connection...');
      await device.connect();
      console.log( '[LOG] connected to device!' );
- 
+
      // Get references to the desired UART service and its characteristics
      const gattServer = await device.gatt();
      const dataService = await gattServer.getPrimaryService( DATA_SERVICE_UUID.toLowerCase() );
@@ -87,7 +82,7 @@ app.get('/', function(req, res) {
      // Callback for when data is received on RX characteristic
      movementChar.on( 'valuechanged', buffer =>
      {
-         console.log('Data is received from Arduino: ' + GESTURES[buffer[0]]);
+         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
          events.emit("gesture", GESTURES[buffer[0]]);
      });
  }
@@ -103,40 +98,15 @@ app.get('/', function(req, res) {
 
 // Socket stuff
 csio.on('connection', function(socket){
-    console.log("A user is connected to server.");
+    console.log("[LOG] A user is connected to server.");
     socket.emit("connection", "Connected!");
-    socket.emit("script-status", script_connected);
 
     events.on("gesture", function(data){
-        console.log("Sending gesture to client.");
+        console.log("[LOG] Sending gesture to client.");
         socket.emit("gesture", data);
     });
-
-    events.on("script-status", function(data){
-        socket.emit("script-status", data);
-    });
 });
 
-psio.on('connection', function(socket){
-    console.log("Python script is connected to server.");
-    script_connected = true;
-    events.emit("script-status", script_connected);
-
-    socket.on("gesture", function(data){
-        console.log("Received a gesture from script: " + data);
-        events.emit("gesture", data);
-    });
-
-    socket.on("disconnect", function(data){
-        script_connected = false;
-        events.emit("script-status", script_connected);
-    })
-});
-
-http1.listen(SCRIPT_PORT, function() {
-	console.log('listening for python script on *:' + SCRIPT_PORT);
-});
-
-http2.listen(CLIENT_PORT, function() {
-	console.log('listening for client side on *:' + CLIENT_PORT);
+http.listen(CLIENT_PORT, function() {
+	console.log('[LOG] Listening for client side on *:' + CLIENT_PORT);
 });
