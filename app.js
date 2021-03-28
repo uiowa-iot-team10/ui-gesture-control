@@ -1,4 +1,5 @@
-const app                 = require('express')();
+const express               = require('express');
+const app                   = express();
 const http_client           = require('http').createServer(app);
 const sio                   = require('socket.io');
 const io_client             = sio(http_client);
@@ -18,18 +19,32 @@ var GESTURES    = {
     3: "RIGHT"
 };
 
-let list_of_devices                = 0;
-var ARDUINO_BLUETOOTH_ADDR         = '';
-const DATA_SERVICE_UUID            = '19B10010-E8F2-537E-4F6C-D104768A1214';
-const PROXIMITY_CHARACTERISTIC_UUID    = '19B10011-E8F2-537E-4F6C-D104768A1214';
-const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
+let list_of_devices                 = 0;
+var ARDUINO_BLUETOOTH_ADDR          = '';
+const DATA_SERVICE_UUID             = '19B10010-E8F2-537E-4F6C-D104768A1214';
+const PROXIMITY_CHARACTERISTIC_UUID = '19B10011-E8F2-537E-4F6C-D104768A1214';
+const MOVEMENT_CHARACTERISTIC_UUID  = '19B10012-E8F2-537E-4F6C-D104768A1214';
 
 
 // To make other files accessible
+app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
-  });
+});
+
+app.get('/forgot', (req, res) => {
+    res.sendFile(__dirname + '/forgot.html');
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(__dirname + '/login.html');
+});
+
+app.get('/signup', (req, res) => {
+    res.sendFile(__dirname + '/signup.html');
+});
+
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
