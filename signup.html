@@ -44,7 +44,7 @@
             user.updateProfile({displayName: name});
             console.log("[LOG] Signed up: " + name);
             var actionCodeSettings = {
-                url: "http://localhost"
+                url: "http://raspberrypi.local"
             };
             user.sendEmailVerification(actionCodeSettings).then(function() {
                 if (window.confirm("[SUCCESS] Please check your email for your account verification."))

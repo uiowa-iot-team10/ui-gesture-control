@@ -22,7 +22,7 @@ var GESTURES    = {
 let list_of_devices                 = 0;
 var ARDUINO_BLUETOOTH_ADDR          = '';
 const DATA_SERVICE_UUID             = '19B10010-E8F2-537E-4F6C-D104768A1214';
-const PROXIMITY_CHARACTERISTIC_UUID = '19B10011-E8F2-537E-4F6C-D104768A1214';
+// const PROXIMITY_CHARACTERISTIC_UUID = '19B10011-E8F2-537E-4F6C-D104768A1214';
 const MOVEMENT_CHARACTERISTIC_UUID  = '19B10012-E8F2-537E-4F6C-D104768A1214';
 
 
@@ -72,16 +72,18 @@ async function setBLE() {
              if(result == "GestureSense")
              {
                 ARDUINO_BLUETOOTH_ADDR = user_mac;
-                 adapter.stopDiscovery();
+                // console.log(ARDUINO_BLUETOOTH_ADDR);
+                adapter.stopDiscovery();
              }
          }).catch(function(err)
          {
-             //console.log(err);
+            //  console.log(err);
          });
 
      }
 
      console.log( '[LOG] discovering...' );
+     console.log(ARDUINO_BLUETOOTH_ADDR);
      const device = await adapter.getDevice(ARDUINO_BLUETOOTH_ADDR);
 
      console.log( '[LOG] found device. attempting connection...');
@@ -91,27 +93,28 @@ async function setBLE() {
      // Get references to the desired UART service and its characteristics
      const gattServer = await device.gatt();
      const dataService = await gattServer.getPrimaryService( DATA_SERVICE_UUID.toLowerCase() );
-     const proxChar = await dataService.getCharacteristic( PROXIMITY_CHARACTERISTIC_UUID.toLowerCase() );
+    //  const proxChar = await dataService.getCharacteristic( PROXIMITY_CHARACTERISTIC_UUID.toLowerCase() );
      const movementChar = await dataService.getCharacteristic( MOVEMENT_CHARACTERISTIC_UUID.toLowerCase() );
      // Register for notifications on the RX characteristic
      await movementChar.startNotifications( );
-     await proxChar.startNotifications( );
+    //  await proxChar.startNotifications( );
 
 
 
      // Callback for when data is received on RX characteristic
      movementChar.on( 'valuechanged', buffer =>
      {
-         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
-         events.emit("gesture", GESTURES[buffer[0]]);
+        console.log("[BUFFER] " + buffer);
+        console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
+        events.emit("gesture", GESTURES[buffer[0]]);
      });
-     proxChar.on( 'valuechanged', buffer =>{
-         if(buffer[0] == 0)
-         {
-            console.log('[LOG] Proximity data is received from Arduino: ' + buffer[0]);
-            events.emit("gesture",buffer[0]);
-         }
-     });
+    //  proxChar.on( 'valuechanged', buffer =>{
+    //      if(buffer[0] == 0)
+    //      {
+    //         console.log('[LOG] Proximity data is received from Arduino: ' + buffer[0]);
+    //         events.emit("gesture",buffer[0]);
+    //      }
+    //  });
 
  }
 
@@ -130,7 +133,7 @@ io_client.on('connection', function(socket){
     socket.emit('connection', "Connected!");
 
     events.on("gesture", function(data) {
-        console.log("[LOG] Sending gesture to client.");
+        console.log("[LOG] Sending gesture to client: " + data);
         socket.emit("gesture", data);
     });
 });

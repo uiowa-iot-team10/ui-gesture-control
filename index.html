@@ -34,6 +34,9 @@
             }
         });
 
+        var game_array = null;
+        var index = 0;
+        focus;
         function sign_out() {
             firebase.auth().signOut().then(() => {
                 window.location.assign("/login");
@@ -41,14 +44,21 @@
                 alert("[ERROR] Could not sign out: " + error.message);
             });
         }
-
+        
         function make_visible() {
             $("#content").removeAttr('hidden');
+            document.onkeydown = interpKeydown;
+            game_array = document.getElementById("game-nav").children;
+            for (i = 0; i < game_array.length; i++)
+            {
+              game_array[i].setAttribute('tabindex', '0');
+            }
+            var index = 0;
+            focus;
+            game_array[index].focus();
         }
     </script>
-    <div id="content" hidden>
-      <h2>Welcome</h2>
-      <button type="button" style="max-width: 15%;" onclick="sign_out()" class="btn btn-primary btn-block"> Sign Out  </button>
+    <div id="content" hidden>      
       <div id = "screen">
         <header>
           <section id = "settings">
@@ -72,6 +82,7 @@
         <section>
           <p id = "status" class = "notconnected">Server: Not Connected!</p>
         </section>
+        <button type="button" style="max-width: 15%;" onclick="sign_out()" class="btn btn-primary btn-block"> Sign Out  </button>
 
         <section id = "info">
           <span id = "sub-title">
@@ -88,18 +99,6 @@
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
-      document.onkeydown = interpKeydown;
-      var game_array = document.getElementById("game-nav").children;
-      for (i = 0; i < game_array.length; i++)
-      {
-      game_array[i].setAttribute('tabindex', '0');
-      }
-      
-      var index = 0;
-      focus;
-
-      game_array[index].focus();
-
       function interpKeydown(e)
       {
         if (e.keyCode == '39') // if right arrow, index + 1
