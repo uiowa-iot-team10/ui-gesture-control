@@ -15,7 +15,8 @@ var GESTURES    = {
     0: "UP",
     1: "DOWN",
     2: "LEFT",
-    3: "RIGHT"
+    3: "RIGHT",
+    4: "INPUT"
 };
 
 let list_of_devices                = 0;
