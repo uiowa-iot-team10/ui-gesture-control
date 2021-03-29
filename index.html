@@ -28,6 +28,8 @@
         background-size: contain;
         width: 100%;
         height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
       #header{
         display: flex;
@@ -52,24 +54,18 @@
         color: white;
       }
 
-      #container{
-        max-width: 90%;
-        margin: 0 auto;
-      }
       #game-nav{
         display: flex;
-        margin-bottom: 23%;
+        height: 50%;
+        margin-left: 5%;
         overflow: hidden;
         white-space: nowrap;
-      }
-      #game-nav:focus-within{
-        margin-bottom: 19.5%;
       }
       #game-nav .game{
         display: inline-block;
         background: linear-gradient(60deg, rgba(16,25,37,1) 0%, rgba(0,0,0,1) 0%, rgba(16,25,37,1) 100%);
-        width: 10rem;
-        height: 10rem;
+        width: 10em;
+        height: 10em;
         border-radius: 20%;
         margin-right: 1%;
         cursor: pointer;
@@ -82,14 +78,14 @@
       #game-nav .game:focus{
         outline: none;
         overflow: visible;
-        width: 15rem;
-        height: 15rem;
+        width: 15em;
+        height: 15em;
         border: 0.25rem solid #576170;
       }
 
       #info{
         width: 50%;
-        margin-bottom: 2rem;
+        height: 10%;
       }
       #sub-title{
         font-weight: 300;
@@ -97,23 +93,22 @@
         color: #576170;
         margin-left: 10%;
       }
-      #game-tweets{
-        width: 47%;
-        margin-bottom: 1.5rem;
-        border: 0.25rem solid #576170;
-        margin-left: 5%;
-      }
-
-
-
       #status {
-        margin-left: 5%;
+        margin-left: 10%;
       }
       .notconnected{
         color: red;
       }
       .connected{
         color: green;
+      }
+
+      #game-tweets{
+        height: 30%;
+        width: 47%;
+        margin-bottom: 1.5rem;
+        border: 0.25rem solid #576170;
+        margin-left: 5%;
       }
 
     </style>
@@ -128,26 +123,21 @@
           </span>
         </section>
       </header>
-      <div id = "container">
-        <div id = "game-nav">
-          <div id = "game1" class = "game"></div>
-          <div id = "game2" class = "game"></div>
-          <div id = "game3" class = "game"></div>
-          <div id = "game4" class = "game"></div>
-        </div>
+      <div id = "game-nav">
+        <div id = "game1" class = "game"></div>
+        <div id = "game2" class = "game"></div>
+        <div id = "game3" class = "game"></div>
+        <div id = "game4" class = "game"></div>
       </div>
 
-      <section>
-        <p id = "status" class = "notconnected">Server: Not Connected!</p>
-      </section>
-
       <section id = "info">
+        <p id = "status" class = "notconnected">Server: Not Connected!</p>
         <span id = "sub-title">
           Latest Games Played
         </span>
       </section>
       <section id = "game-tweets">
-        <a class="twitter-timeline" data-width="100rem" data-height="25rem" data-theme="dark" href="https://twitter.com/updates_pi?ref_src=twsrc%5Etfw">Tweets by Wendys</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <a class="twitter-timeline" data-width="100%" data-height="100%" data-theme="dark" href="https://twitter.com/updates_pi?ref_src=twsrc%5Etfw">Tweets by Wendys</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
       </section>
     </div>
 
