@@ -99,6 +99,10 @@ void loop() {
             Serial.println("Detected RIGHT gesture");
             movementChar.writeValue(gesture);
             break;
+          case GESTURE_NEAR:
+            Serial.println("Detected NEAR gesture");
+            movementChar.writeValue(gesture);
+            break;
 
           default:
             // ignore
