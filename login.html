@@ -24,7 +24,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
+            if (user && user.emailVerified) {
                 window.location.replace("/");
             } else {
                 $(".container").removeAttr('hidden');

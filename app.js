@@ -1,8 +1,8 @@
-const express               = require('express');
-const app                   = express();
-const http_client           = require('http').createServer(app);
-const sio                   = require('socket.io');
-const io_client             = sio(http_client);
+const express             = require('express');
+const app                 = express();
+const http_client         = require('http').createServer(app);
+const sio                 = require('socket.io');
+const io_client           = sio(http_client);
 const { createBluetooth } = require( 'node-ble' );
 
 const EventEmitter = require('events');
@@ -12,6 +12,7 @@ events.setMaxListeners(20);
 
 
 var CLIENT_PORT = process.env.PORT || 80;
+
 var GESTURES    = {
     0: "UP",
     1: "DOWN",
@@ -83,7 +84,7 @@ async function setBLE() {
      }
 
      console.log( '[LOG] discovering...' );
-     console.log(ARDUINO_BLUETOOTH_ADDR);
+    //  console.log(ARDUINO_BLUETOOTH_ADDR);
      const device = await adapter.getDevice(ARDUINO_BLUETOOTH_ADDR);
 
      console.log( '[LOG] found device. attempting connection...');
@@ -104,7 +105,6 @@ async function setBLE() {
      // Callback for when data is received on RX characteristic
      movementChar.on( 'valuechanged', buffer =>
      {
-        console.log("[BUFFER] " + buffer);
         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
         events.emit("gesture", GESTURES[buffer[0]]);
      });
