@@ -26,19 +26,18 @@
       #screen {
         background: url(https://wallpapercave.com/wp/dLB5ai0.jpg);
         background-size: contain;
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
       }
       #header{
         display: flex;
-        width: auto;
+        width: 100%;
         justify-content: space-between;
-        padding: 5%;
+        padding: 40px;
       }
       #settings{
-        width: 100%;
+        width: 1920px;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -54,24 +53,21 @@
         color: white;
       }
 
+      #container{
+        max-width: 90%;
+        margin: 0 auto;
+      }
       #game-nav{
         display: flex;
-        height: 50%;
-        margin-left: 5%;
+        margin-bottom: 250px;
         overflow: hidden;
         white-space: nowrap;
       }
       #game-nav .game{
         display: inline-block;
-<<<<<<< HEAD
        /* background: linear-gradient(60deg, rgba(16,25,37,1) 0%, rgba(0,0,0,1) 0%, rgba(16,25,37,1) 100%);*/
         width: 100px;
         height: 100px;
-=======
-        background: linear-gradient(60deg, rgba(16,25,37,1) 0%, rgba(0,0,0,1) 0%, rgba(16,25,37,1) 100%);
-        width: 10em;
-        height: 10em;
->>>>>>> 3d2da976e27d674a853a3b5e06714d051ea3a4b2
         border-radius: 20%;
         margin-right: 1%;
         cursor: pointer;
@@ -79,26 +75,20 @@
         background-color: black;
       }
       #game-nav .game:hover{
-        border: 0.25rem solid #576170;
+        border: 2px solid #576170;
       }
       #game-nav .game:focus{
         outline: none;
         overflow: visible;
-<<<<<<< HEAD
         width: 150px;
         height: 150px;
         border: 2px solid #576170;
         color: red;
-=======
-        width: 15em;
-        height: 15em;
-        border: 0.25rem solid #576170;
->>>>>>> 3d2da976e27d674a853a3b5e06714d051ea3a4b2
       }
 
       #info{
         width: 50%;
-        height: 10%;
+        margin-bottom: 2rem;
       }
       #sub-title{
         font-weight: 300;
@@ -106,22 +96,24 @@
         color: #576170;
         margin-left: 10%;
       }
+
+      #game-tweets{
+        width: 50%;
+        margin-bottom: 2rem;
+        border: 2px solid #576170;
+        margin-left: 5%;
+      }
+
+
+
       #status {
-        margin-left: 10%;
+        margin-left: 5%;
       }
       .notconnected{
         color: red;
       }
       .connected{
         color: green;
-      }
-
-      #game-tweets{
-        height: 30%;
-        width: 47%;
-        margin-bottom: 1.5rem;
-        border: 0.25rem solid #576170;
-        margin-left: 5%;
       }
 
     </style>
@@ -136,21 +128,26 @@
           </span>
         </section>
       </header>
-      <div id = "game-nav">
-        <div id = "game1" class = "game"></div>
-        <div id = "game2" class = "game"></div>
-        <div id = "game3" class = "game"></div>
-        <div id = "game4" class = "game"></div>
+      <div id = "container">
+        <div id = "game-nav">
+          <div id = "game1" class = "game"></div>
+          <div id = "game2" class = "game"></div>
+          <div id = "game3" class = "game"></div>
+          <div id = "game4" class = "game"></div>
+        </div>
       </div>
 
-      <section id = "info">
+      <section>
         <p id = "status" class = "notconnected">Server: Not Connected!</p>
+      </section>
+
+      <section id = "info">
         <span id = "sub-title">
           Latest Games Played
         </span>
       </section>
       <section id = "game-tweets">
-        <a class="twitter-timeline" data-width="100%" data-height="100%" data-theme="dark" href="https://twitter.com/updates_pi?ref_src=twsrc%5Etfw">Tweets by Wendys</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <a class="twitter-timeline" data-width="1200" data-height="400" data-theme="dark" href="https://twitter.com/Wendys?ref_src=twsrc%5Etfw">Tweets by Wendys</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
       </section>
     </div>
 
@@ -185,8 +182,10 @@
 
       function setNewFocus(direction)
       {
+        var status = document.getElementById("sub-title");
           if (direction == 'RIGHT')
           {
+            status.innerText = "GOING RIGHT!";
             if (index < game_array.length) {
               index = index + 1;
               game_array[index].focus();
@@ -194,15 +193,15 @@
           }
           else if (direction == 'LEFT')
           {
+            status.innerText = "GOING LEFT!";
             if (index > 0) {
               index = index - 1;
               game_array[index].focus();
             }
           }
-          else if(direction == 0)
+          else if(direction == 'INPUT')
           {
-            var status = document.getElementById(game_array[index]);
-            status.style.backgroundColor = 'yellow';
+            status.innerText = "YOU JUST PRESSED ENTER!";
           }
       }
 
