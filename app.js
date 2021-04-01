@@ -66,7 +66,7 @@ async function setBLE() {
     const adapter = await bluetooth.defaultAdapter();
     console.log( '[LOG] discovering...' );
     await adapter.startDiscovery();
-    while (True) {
+    while (true) {
         const list_devices = await adapter.devices().then(function(result){
                 list_of_devices = result;
         });
