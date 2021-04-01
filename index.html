@@ -26,18 +26,19 @@
       #screen {
         background: url(https://wallpapercave.com/wp/dLB5ai0.jpg);
         background-size: contain;
-        width: 1920px;
-        height: 1080px;
-        overflow: hidden;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
       #header{
         display: flex;
-        width: 100%;
+        width: auto;
         justify-content: space-between;
-        padding: 40px;
+        padding: 5%;
       }
       #settings{
-        width: 1920px;
+        width: 100%;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -53,21 +54,18 @@
         color: white;
       }
 
-      #container{
-        max-width: 90%;
-        margin: 0 auto;
-      }
       #game-nav{
         display: flex;
-        margin-bottom: 250px;
+        height: 50%;
+        margin-left: 5%;
         overflow: hidden;
         white-space: nowrap;
       }
       #game-nav .game{
         display: inline-block;
-       /* background: linear-gradient(60deg, rgba(16,25,37,1) 0%, rgba(0,0,0,1) 0%, rgba(16,25,37,1) 100%);*/
-        width: 100px;
-        height: 100px;
+        background: linear-gradient(60deg, rgba(16,25,37,1) 0%, rgba(0,0,0,1) 0%, rgba(16,25,37,1) 100%);
+        width: 10em;
+        height: 10em;
         border-radius: 20%;
         margin-right: 1%;
         cursor: pointer;
@@ -75,20 +73,19 @@
         background-color: black;
       }
       #game-nav .game:hover{
-        border: 2px solid #576170;
+        border: 0.25rem solid #576170;
       }
       #game-nav .game:focus{
         outline: none;
         overflow: visible;
-        width: 150px;
-        height: 150px;
-        border: 2px solid #576170;
-        color: red;
+        width: 15em;
+        height: 15em;
+        border: 0.25rem solid #576170;
       }
 
       #info{
         width: 50%;
-        margin-bottom: 2rem;
+        height: 10%;
       }
       #sub-title{
         font-weight: 300;
@@ -96,24 +93,22 @@
         color: #576170;
         margin-left: 10%;
       }
-
-      #game-tweets{
-        width: 50%;
-        margin-bottom: 2rem;
-        border: 2px solid #576170;
-        margin-left: 5%;
-      }
-
-
-
       #status {
-        margin-left: 5%;
+        margin-left: 10%;
       }
       .notconnected{
         color: red;
       }
       .connected{
         color: green;
+      }
+
+      #game-tweets{
+        height: 30%;
+        width: 47%;
+        margin-bottom: 1.5rem;
+        border: 0.25rem solid #576170;
+        margin-left: 5%;
       }
 
     </style>
@@ -128,26 +123,21 @@
           </span>
         </section>
       </header>
-      <div id = "container">
-        <div id = "game-nav">
-          <div id = "game1" class = "game"></div>
-          <div id = "game2" class = "game"></div>
-          <div id = "game3" class = "game"></div>
-          <div id = "game4" class = "game"></div>
-        </div>
+      <div id = "game-nav">
+        <div id = "game1" class = "game" onclick="changePage('/ticTacToe.html')"></div>
+        <div id = "game2" class = "game"></div>
+        <div id = "game3" class = "game"></div>
+        <div id = "game4" class = "game"></div>
       </div>
 
-      <section>
-        <p id = "status" class = "notconnected">Server: Not Connected!</p>
-      </section>
-
       <section id = "info">
+        <p id = "status" class = "notconnected">Server: Not Connected!</p>
         <span id = "sub-title">
           Latest Games Played
         </span>
       </section>
       <section id = "game-tweets">
-        <a class="twitter-timeline" data-width="1200" data-height="400" data-theme="dark" href="https://twitter.com/Wendys?ref_src=twsrc%5Etfw">Tweets by Wendys</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <a class="twitter-timeline" data-width="100%" data-height="100%" data-theme="dark" href="https://twitter.com/updates_pi?ref_src=twsrc%5Etfw">Tweets by Wendys</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
       </section>
     </div>
 
@@ -160,7 +150,7 @@
       var game_array = document.getElementById("game-nav").children;
       for (i = 0; i < game_array.length; i++)
       {
-      game_array[i].setAttribute('tabindex', '0');
+        game_array[i].setAttribute('tabindex', '0');
       }
       
       var index = 0;
@@ -201,6 +191,11 @@
             var status = document.getElementById(game_array[index]);
             status.style.backgroundColor = 'yellow';
           }
+      }
+
+      function changePage(newPage)
+      {
+        location.href = newPage;
       }
 
       var socket = io.connect();
