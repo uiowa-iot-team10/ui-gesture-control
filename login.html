@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyD-1MU1jlQAtUxHzIMSHbRPFFLDZ7uzI8M",
+            authDomain: "iot-team10.firebaseapp.com",
+            projectId: "iot-team10",
+            storageBucket: "iot-team10.appspot.com",
+            messagingSenderId: "196021370184",
+            appId: "1:196021370184:web:3506364930c0c74fa9477d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user && user.emailVerified) {
+                window.location.replace("/");
+            } else {
+                $(".container").removeAttr('hidden');
+            }
+        });
+
+        function sign_in() {
+            var email    = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Signed in
+                var user = userCredential.user;
+                console.log("[LOG] Signed in: " + user.displayName);
+                window.location.assign("/");
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                $("#formAlert p").html("<strong>Error!</strong> " + errorMessage);
+                $("#formAlert").removeClass('d-none');
+                // console.log("[ERROR (" + errorCode + ")] Could not sign in: " + errorMessage);
+                // alert("[ERROR (" + errorCode + ")] Could not sign in: " + errorMessage);
+            });
+        }
+        function ValidateEmail(email) 
+        {
+            const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (re.test(email))
+                return "";
+            return "E-mail format is not correct";
+        }
+
+        function validate_inputs() {
+            var email  = document.getElementById("email");
+            email.setCustomValidity(ValidateEmail(email.value));
+        }
+
+    </script>
+    <!-- Template from https://bootsnipp.com/snippets/z8699 -->
+    <div class="container" hidden>
+        <article class="card-body mx-auto" style="max-width: 400px;">
+            <h4 class="card-title mt-3 text-center">Sign In</h4>
+            <div id="formAlert" class="alert d-none alert-danger alert-dismissible fade show" role="alert">
+                <p><strong>Warning!</strong> Make sure all fields are filled and try again.</p>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            <form method="POST" action="javascript:sign_in()" class="needs-validation" oninput='validate_inputs()'>
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+                    </div>
+                    <input id="email" name="email" class="form-control" placeholder="Email address" type="email" onblur="validate_inputs()" required>
+                </div> <!-- form-group// -->
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                    </div>
+                    <input id="password" name="password" class="form-control" placeholder="Create password" type="password" required>
+                </div> <!-- form-group// -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block"> Login  </button>
+                </div> <!-- form-group// -->
+                <p class="text-center">Forgot password? <a href="/forgot">Reset</a> </p>
+                <p class="text-center">Do not have an account? <a href="/signup">Sign Up</a> </p>
+            </form>
+        </article>
+    </div> <!--container end.//-->
+
+</body>
+</html>
