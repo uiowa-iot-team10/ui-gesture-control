@@ -47,6 +47,11 @@ app.get('/signup', (req, res) => {
     res.sendFile(__dirname + '/signup.html');
 });
 
+app.get('/tic-tac-toe', (req, res) => {
+    res.sendFile(__dirname + '/ticTacToe.html');
+});
+
+
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
@@ -111,8 +116,8 @@ async function setBLE() {
     // Callback for when data is received on RX characteristic
     movementChar.on( 'valuechanged', buffer =>
     {
-    console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
-    events.emit("gesture", GESTURES[buffer[0]]);
+        console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
+        events.emit("gesture", GESTURES[buffer[0]]);
     });
     //  proxChar.on( 'valuechanged', buffer =>{
     //      if(buffer[0] == 0)
@@ -137,6 +142,11 @@ setBLE().then((ret) =>
 io_client.on('connection', function(socket){
     console.log("[LOG] A user is connected to server.");
     socket.emit('connection', "Connected!");
+
+    socket.on('disconnect', function(socket){
+        console.log("User has disconnected.");
+        // socket.close();
+    })
 
     events.on("gesture", function(data) {
         console.log("[LOG] Sending gesture to client: " + data);
