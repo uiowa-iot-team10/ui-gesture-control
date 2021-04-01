@@ -18,27 +18,32 @@
 */
 
 #include <ArduinoBLE.h>
+#include <Arduino_LSM9DS1.h>
 #include <Arduino_APDS9960.h>
 
 
-unsigned long lastUpdate = 0;
-int proximity = 0;
+//float x = 0;
+//float y = 0;
+//float z = 0;
 
-BLEService ledService("19B10010-E8F2-537E-4F6C-D104768A1214"); // create service
+BLEService dataService("19B10010-E8F2-537E-4F6C-D104768A1214"); // create service
 
-BLEIntCharacteristic proxChar("19B10011-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead | BLENotify);
+
+BLEFloatCharacteristic gyroXChar("19B10011-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead | BLENotify);
 BLEIntCharacteristic movementChar("19B10012-E8F2-537E-4F6C-D104768A1214",BLEWrite | BLERead | BLENotify);
-
-
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+   while (!Serial);
 
   // begin initialization
   if (!BLE.begin()) {
     Serial.println("starting BLE failed!");
     while (1);
+  }
+  if(!IMU.begin()){
+    Serial.println("Failed to initialize IMU!");
+    while(1);
   }
   if(!APDS.begin()){
     Serial.println("Error initializing APDS9960 sensor!");
@@ -47,14 +52,14 @@ void setup() {
   // set the local name peripheral advertises
   BLE.setLocalName("GestureSense");
   // set the UUID for the service this peripheral advertises:
-  BLE.setAdvertisedService(ledService);
+  BLE.setAdvertisedService(dataService);
 
   // add the characteristics to the service
-  ledService.addCharacteristic(movementChar);
-  ledService.addCharacteristic(proxChar);
+  dataService.addCharacteristic(gyroXChar);
+  dataService.addCharacteristic(movementChar);
 
   // add the service
-  BLE.addService(ledService);
+  BLE.addService(dataService);
 
   // start advertising
   BLE.advertise();
@@ -70,14 +75,9 @@ void loop() {
     Serial.println("Connected");
     while(central.connected())
     {
-      if(APDS.proximityAvailable())
-      {
-        proximity = APDS.readProximity();
-      }
       if (APDS.gestureAvailable()) 
       {
-        
-       int gesture = APDS.readGesture();
+        int gesture = APDS.readGesture();
 
         switch (gesture) {
           case GESTURE_UP:
@@ -103,14 +103,6 @@ void loop() {
           default:
             // ignore
             break;
-        }
-      }
-      if(millis() - lastUpdate > 500)
-      {
-        lastUpdate = millis();
-        if(proximity == 0)
-        {
-          proxChar.writeValue(proximity);
         }
       }
     }
