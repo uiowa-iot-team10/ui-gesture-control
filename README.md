@@ -80,3 +80,7 @@ To close the Tmux windows (If you really want to terminate server or script):
 2. `CTRL + C`, to kill the process.
 3. `CTRL + D`, to terminate the Tmux window.
 
+## ARDUINO CODE UPDATE
+1. Locate the Arduino library Arduino_APDS9960 on your computer.
+2. Navigate to `Arduino_APDS9960.cpp` and add the following code after line 313 `if ((totalY <= 10 && totalY >= -10) && (totalX <= 10 && totalX >= -10))   { _detectedGesture = GESTURE_NEAR; }`
+3. Navigate to `Arduino_APDS9960.h` and add the following code after line 31 `GESTURE_NEAR = 4`
