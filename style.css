@@ -105,6 +105,7 @@ a {
 }
 
 #game-tweets{
+    overflow: hidden;
     height: 30%;
     width: 47%;
     margin-bottom: 1.5rem;
