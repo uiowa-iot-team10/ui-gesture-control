@@ -3,81 +3,9 @@
   <head>
     <title>IoT Team 10</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="./style.css">
   </head>
   <body>
-    <style>
-      html,
-      body {
-        padding: 0;
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-          Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      #screen {
-        background: url(https://wallpapercave.com/wp/dLB5ai0.jpg);
-        background-size: contain;
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      #header{
-        display: flex;
-        width: auto;
-        justify-content: space-between;
-        padding: 5%;
-      }
-      #settings{
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        color: white;
-      }
-      #icon{
-        display: block;
-        margin-right: 3%;
-        margin-top: 3%;
-      }
-      #fa{
-        font-size: 2rem;
-        color: white;
-      }
-
-      #ticTacToeBox {
-        align-self: center;
-        display: flex;
-        flex-direction: column;
-      }
-      #ticTacToeBox .row {
-          display: flex;
-      }
-      #ticTacToeBox .game{
-        border: 0.25rem solid white;
-        width: 15rem;
-        height: 15rem;
-        background-size: contain;
-      }
-      #ticTacToeBox .game:hover{
-        border: 0.25rem solid orangered;
-      }
-      #ticTacToeBox .game:focus{
-        outline: none;
-        overflow: visible;
-        border: 0.75rem solid orangered;
-      }
-
-    </style>
     <div id = "screen">
       <header>
         <section id = "settings">
@@ -205,6 +133,23 @@
             }
           }
 
+          else if (direction == 'INPUT')
+          {
+            if (player == 1)
+            {
+              rows[row_index][col_index].style.backgroundImage="url(https://iconsplace.com/wp-content/uploads/_icons/ff0000/256/png/letter-o-icon-14-256.png)";
+            }
+            else
+            {
+              rows[row_index][col_index].style.backgroundImage="url(https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Red_X.svg/768px-Red_X.svg.png)";
+            }
+            
+            if (checkForVictory())
+            {
+              //
+            }
+          }
+
           rows[row_index][col_index].focus();
       }
 
@@ -214,17 +159,17 @@
       }
 
       var socket = io.connect();
-      socket.on('connection', function(data){
-          var status = document.getElementById("status");
-          status.setAttribute("class", "connected");
-          status.innerHTML = "Server: Connected!";
-      });
+      // socket.on('connection', function(data){
+      //     var status = document.getElementById("status");
+      //     status.setAttribute("class", "connected");
+      //     status.innerHTML = "Server: Connected!";
+      // });
 
-      socket.on('disconnect', function(data){
-          var status = document.getElementById("status");
-          status.setAttribute("class", "notconnected");
-          status.innerHTML = "Server: Not Connected!";
-      });
+      // socket.on('disconnect', function(data){
+      //     var status = document.getElementById("status");
+      //     status.setAttribute("class", "notconnected");
+      //     status.innerHTML = "Server: Not Connected!";
+      // });
 
       socket.on('gesture', function(data){
           console.log(data);
