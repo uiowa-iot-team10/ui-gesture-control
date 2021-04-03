@@ -137,7 +137,8 @@
         location.href = newPage;
       }
 
-      var socket = io.connect();
+     
+      var socket = io();
       socket.on('connection', function(data){
           var status = document.getElementById("status");
           status.setAttribute("class", "connected");

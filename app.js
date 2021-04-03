@@ -5,10 +5,10 @@ const sio                 = require('socket.io');
 const io_client           = sio(http_client);
 const { createBluetooth } = require( 'node-ble' );
 
-const EventEmitter = require('events');
-EventEmitter.defaultMaxListeners = 20;
-const events = new EventEmitter();
-events.setMaxListeners(20);
+// const EventEmitter = require('events');
+// EventEmitter.defaultMaxListeners = 20;
+// const events = new EventEmitter();
+// events.setMaxListeners(20);
 
 
 var CLIENT_PORT = process.env.PORT || 80;
@@ -47,6 +47,11 @@ app.get('/signup', (req, res) => {
     res.sendFile(__dirname + '/signup.html');
 });
 
+app.get('/tic-tac-toe', (req, res) => {
+    res.sendFile(__dirname + '/ticTacToe.html');
+});
+
+
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
@@ -58,6 +63,22 @@ app.get('/test', function(req, res) {
 });
 
 
+
+
+
+// Socket stuff
+io_client.on('connection', function(socket){
+    console.log("[LOG] A user is connected to server.");
+    socket.emit('connection', "Connected!");
+
+    socket.on('disconnect', function(socket){
+        console.log("User has disconnected.");
+    })
+});
+
+http_client.listen(CLIENT_PORT, function(){
+	console.log('[LOG] Listening for client side on *:' + CLIENT_PORT);
+});
 
 // function now automatically connects to BLE Device(Arduino 33 BLE Sense) via bluetooth.
 async function setBLE() {
@@ -102,26 +123,16 @@ async function setBLE() {
     // Get references to the desired UART service and its characteristics
     const gattServer = await device.gatt();
     const dataService = await gattServer.getPrimaryService( DATA_SERVICE_UUID.toLowerCase() );
-    //  const proxChar = await dataService.getCharacteristic( PROXIMITY_CHARACTERISTIC_UUID.toLowerCase() );
     const movementChar = await dataService.getCharacteristic( MOVEMENT_CHARACTERISTIC_UUID.toLowerCase() );
     // Register for notifications on the RX characteristic
     await movementChar.startNotifications( );
-    //  await proxChar.startNotifications( );
 
     // Callback for when data is received on RX characteristic
     movementChar.on( 'valuechanged', buffer =>
     {
-    console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
-    events.emit("gesture", GESTURES[buffer[0]]);
+        console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
+        io_client.sockets.emit("gesture",GESTURES[buffer[0]]);
     });
-    //  proxChar.on( 'valuechanged', buffer =>{
-    //      if(buffer[0] == 0)
-    //      {
-    //         console.log('[LOG] Proximity data is received from Arduino: ' + buffer[0]);
-    //         events.emit("gesture",buffer[0]);
-    //      }
-    //  });
-
  }
 
 setBLE().then((ret) =>
@@ -130,20 +141,4 @@ setBLE().then((ret) =>
 }).catch((err) =>
 {
     if (err) console.error(  );
-});
-
-
-// Socket stuff
-io_client.on('connection', function(socket){
-    console.log("[LOG] A user is connected to server.");
-    socket.emit('connection', "Connected!");
-
-    events.on("gesture", function(data) {
-        console.log("[LOG] Sending gesture to client: " + data);
-        socket.emit("gesture", data);
-    });
-});
-
-http_client.listen(CLIENT_PORT, function(){
-	console.log('[LOG] Listening for client side on *:' + CLIENT_PORT);
 });
