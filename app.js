@@ -131,11 +131,7 @@ async function setBLE() {
     movementChar.on( 'valuechanged', buffer =>
     {
         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
-<<<<<<< HEAD
         io_client.sockets.emit("gesture",GESTURES[buffer[0]]);
-=======
-        events.emit("gesture", GESTURES[buffer[0]]);
->>>>>>> refs/remotes/origin/main
     });
  }
 
@@ -145,29 +141,4 @@ setBLE().then((ret) =>
 }).catch((err) =>
 {
     if (err) console.error(  );
-<<<<<<< HEAD
 });
-=======
-});
-
-
-// Socket stuff
-io_client.on('connection', function(socket){
-    console.log("[LOG] A user is connected to server.");
-    socket.emit('connection', "Connected!");
-
-    socket.on('disconnect', function(socket){
-        console.log("User has disconnected.");
-        // socket.close();
-    })
-
-    events.on("gesture", function(data) {
-        console.log("[LOG] Sending gesture to client: " + data);
-        socket.emit("gesture", data);
-    });
-});
-
-http_client.listen(CLIENT_PORT, function(){
-	console.log('[LOG] Listening for client side on *:' + CLIENT_PORT);
-});
->>>>>>> refs/remotes/origin/main
