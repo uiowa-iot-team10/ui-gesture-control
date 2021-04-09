@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IoT Team 10</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/public/styles/main_style.css">
+  </head>
+  <body>
+    <div id = "screen">
+      <header>
+        <section id = "settings">
+          <span id="icon">
+            <i id = "fa" class="fa fa-bar-chart fa-lg"></i>
+          </span>
+          <span id="icon">
+            <i id = "fa" class="fa fa-user-o fa-lg"></i>
+          </span>
+        </section>
+      </header>
+      <div id="ticTacToeBox">
+        <div id = "row1" class="row">
+            <div id = "r1c1" class = "game"></div>
+            <div id = "r1c2" class = "game"></div>
+            <div id = "r1c3" class = "game"></div>
+        </div>
+        <div id = "row2" class="row">
+            <div id = "r2c1" class = "game"></div>
+            <div id = "r2c2" class = "game"></div>
+            <div id = "r2c3" class = "game"></div>
+        </div>
+        <div id = "row3" class="row">
+            <div id = "r3c1" class = "game"></div>
+            <div id = "r3c2" class = "game"></div>
+            <div id = "r3c3" class = "game"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="/public/js/tictactoe.js"></script>
+  </body>
+</html>

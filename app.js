@@ -32,26 +32,24 @@ const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 app.get('/forgot', (req, res) => {
-    res.sendFile(__dirname + '/forgot.html');
+    res.sendFile(__dirname + '/public/forgot.html');
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(__dirname + '/login.html');
+    res.sendFile(__dirname + '/public/login.html');
 });
 
 app.get('/signup', (req, res) => {
-    res.sendFile(__dirname + '/signup.html');
+    res.sendFile(__dirname + '/public/signup.html');
 });
 
 app.get('/tic-tac-toe', (req, res) => {
-    res.sendFile(__dirname + '/ticTacToe.html');
+    res.sendFile(__dirname + '/public/games/ticTacToe.html');
 });
-
-
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
@@ -59,12 +57,8 @@ app.use(function(req, res, next) {
 });
 
 app.get('/test', function(req, res) {
-	res.sendFile(__dirname + '/test/index.html');
+	res.sendFile(__dirname + '/public/test/index.html');
 });
-
-
-
-
 
 // Socket stuff
 io_client.on('connection', function(socket){
