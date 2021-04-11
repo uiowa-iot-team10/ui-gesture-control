@@ -51,6 +51,10 @@ app.get('/tic-tac-toe', (req, res) => {
     res.sendFile(__dirname + '/public/games/ticTacToe.html');
 });
 
+app.get('/connect4', (req, res) => {
+    res.sendFile(__dirname + '/public/games/connect4.html');
+});
+
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
     res.status(404).send("Sorry, that route doesn't exist.");

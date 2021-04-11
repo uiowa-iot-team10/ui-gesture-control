@@ -3,7 +3,7 @@ var totalMoves = 0;
 
 document.onkeydown = interpKeydown;
 
-var row_groups = document.getElementById("ticTacToeBox").children;
+var row_groups = document.getElementById("c4Box").children;
 var rows = [];
 for (i = 0; i < row_groups.length; i++)
 {
@@ -28,14 +28,6 @@ function interpKeydown(e)
 	else if (e.keyCode == '37') // else if left arrow, index - 1
 	{
 		setNewFocus('LEFT');
-	}
-	else if (e.keyCode == '38') // else if left arrow, index - 1
-	{
-		setNewFocus('UP');
-	}
-	else if (e.keyCode == '40') // else if left arrow, index - 1
-	{
-		setNewFocus('DOWN');
 	}
 	else if (e.keyCode == '13') // else if enter key, press down
 	{
@@ -69,36 +61,39 @@ function setNewFocus(direction)
 			col_index -= 1;
 		}
 	}
-	else if (direction == 'UP')
-	{
-		if (row_index > 0)
-		{
-			row_index -= 1;
-		}
-	}
-	else if (direction == 'DOWN')
-	{
-		if (row_index < rows.length - 1)
-		{
-			row_index += 1;
-		}
-	}
 	else if (direction == 'INPUT')
 	{
-		if (rows[row_index][col_index].className.match(/(?:^|\s)ex(?!\S)/) || rows[row_index][col_index].className.match(/(?:^|\s)oh(?!\S)/))
+		if (rows[row_index][col_index].className.match(/(?:^|\s)p1(?!\S)/) || rows[row_index][col_index].className.match(/(?:^|\s)p2(?!\S)/))
 		{
 			document.getElementById("debug1").innerHTML = "Put Neither";
 			return; // if there is already an X or O there don't let a new one get put down
 		}
-		else if (player == 1)
+
+		// Find which col to put circle in
+		for (i = 0; i < rows.length; i++)
 		{
-			rows[row_index][col_index].className += " ex";
-			document.getElementById("debug1").innerHTML = "Put X";
+			if (rows[i+1][col_index].className.match(/(?:^|\s)p1(?!\S)/) || rows[i+1][col_index].className.match(/(?:^|\s)p2(?!\S)/))
+			{
+				document.getElementById("debug2").innerHTML = "entered thing I want";
+				row_index = i;
+			}
+			else if (i = rows.length - 1)
+			{
+				row_index = rows.length - 1;
+			}
+		}
+
+		if (player == 1)
+		{
+			rows[row_index][col_index].className += " p1";
+			var debugStr =  "Put blue @ (" + row_index + "," + col_index + ")";
+			document.getElementById("debug1").innerHTML = debugStr;
 		}
 		else
 		{
-			rows[row_index][col_index].className += " oh";
-			document.getElementById("debug1").innerHTML = "Put O";
+			rows[row_index][col_index].className += " p2";
+			var debugStr =  "Put red @ (" + row_index + "," + col_index + ")";
+			document.getElementById("debug1").innerHTML = debugStr;
 		}
 
 		totalMoves += 1;
@@ -108,6 +103,9 @@ function setNewFocus(direction)
 		
 		// end players turn
 		// endTurn();
+
+		// row_index back to 0 since you drop from the top in connect 4
+		row_index = 0;
 	}
 
 	rows[row_index][col_index].focus();
@@ -117,55 +115,49 @@ function checkForVictory()
 {
 	var inARow = 0;
 
-	document.getElementById("debug2").innerHTML = totalMoves;
-
-	if (totalMoves > 8)
+	if (totalMoves > 41)
 	{
 		document.getElementById("announcementText").innerHTML = "It's a DRAW!";
 	}
 
 	// check vertical win
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 6; i++)
 	{
 		if (checkBox(player, i, col_index))
 		{
 			inARow += 1;
 		}
+		else{inARow = 0;}
+
+		if (inARow >= 4){printWin(player);}
 	}
-	if (inARow == 3){printWin(player);}
-	else {inARow = 0;}
+	inARow = 0;
 
 	// check horizontal win
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 7; i++)
 	{
 		if (checkBox(player, row_index, i))
 		{
 			inARow += 1;
 		}
+		else{inARow = 0;}
+
+		if (inARow >= 4){printWin(player);}
 	}
-	if (inARow == 3){printWin(player);}
-	else {inARow = 0;}
+	inARow = 0;
 	
 	// check diag win
 	for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, i, i))
-		{
-			inARow += 1;
-		}
+		//
 	}
 	if (inARow == 3){printWin(player);}
 	else {inARow = 0;}
 
 	// check opposite diag win
-	var j = 2;
 	for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, j, i))
-		{
-			inARow += 1;
-		}
-		j--;
+		//
 	}
 	if (inARow == 3){printWin(player);}
 	else {inARow = 0;}
@@ -175,11 +167,11 @@ function checkBox(playerNum, row, col)
 {
 	if (playerNum == 1)
 	{
-		return rows[row][col].className.match(/(?:^|\s)ex(?!\S)/);
+		return rows[row][col].className.match(/(?:^|\s)p1(?!\S)/);
 	}
 	else if (playerNum == 2)
 	{
-		return rows[row][col].className.match(/(?:^|\s)oh(?!\S)/);
+		return rows[row][col].className.match(/(?:^|\s)p2(?!\S)/);
 	}
 	return false;
 }
