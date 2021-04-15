@@ -3,17 +3,24 @@ var totalMoves = 0;
 
 document.onkeydown = interpKeydown;
 
+// Internal array keeping track of where X's and O's were put
+var rows_tracker = []
+
+// Array of actual page elements to add X's and O's
 var row_groups = document.getElementById("c4Box").children;
 var rows = [];
 for (i = 0; i < row_groups.length; i++)
 {
 	rows[i] = row_groups[i].children;
+	rows_tracker[i] = [];
 	for (j = 0; j < rows[i].length; j++)
 	{
 		rows[i][j].setAttribute('tabindex', '0');
+		rows_tracker[i][j] = 0; // fill the tracker with 0's to represent empty squares
 	}
 }
 
+// Keeps track of where on the board the user is at
 var row_index = 0;
 var col_index = 0;
 
@@ -34,7 +41,7 @@ function interpKeydown(e)
 		setNewFocus('INPUT');
 	}
 
-	// TODO: REMOVE THIS, THIS IS ONLY TO TEST CHANGIN PLAYERS
+	// TODO: REMOVE THIS, THIS IS ONLY TO TEST CHANGING PLAYERS
 	else if (e.keyCode == '49') // else if enter key, press down
 	{
 		player = 1;
@@ -63,37 +70,35 @@ function setNewFocus(direction)
 	}
 	else if (direction == 'INPUT')
 	{
-		if (rows[row_index][col_index].className.match(/(?:^|\s)p1(?!\S)/) || rows[row_index][col_index].className.match(/(?:^|\s)p2(?!\S)/))
+		if (rows_tracker[row_index][col_index] != 0)
 		{
-			document.getElementById("debug1").innerHTML = "Put Neither";
-			return; // if there is already an X or O there don't let a new one get put down
+			return; // if there is already a chip there put neither and let user continue turn
 		}
 
-		// Find which col to put circle in
-		for (i = 0; i < rows.length; i++)
+		// Find which row/col to put circle in
+		for (i = 0; i < rows_tracker.length; i++)
 		{
-			if (rows[i+1][col_index].className.match(/(?:^|\s)p1(?!\S)/) || rows[i+1][col_index].className.match(/(?:^|\s)p2(?!\S)/))
+			if (i == (rows_tracker.length - 1))
 			{
-				document.getElementById("debug2").innerHTML = "entered thing I want";
 				row_index = i;
+				break;
 			}
-			else if (i = rows.length - 1)
+			else if (rows_tracker[i+1][col_index] != 0)
 			{
-				row_index = rows.length - 1;
+				row_index = i;
+				break;
 			}
 		}
 
 		if (player == 1)
 		{
 			rows[row_index][col_index].className += " p1";
-			var debugStr =  "Put blue @ (" + row_index + "," + col_index + ")";
-			document.getElementById("debug1").innerHTML = debugStr;
+			rows_tracker[row_index][col_index] = 1;
 		}
 		else
 		{
 			rows[row_index][col_index].className += " p2";
-			var debugStr =  "Put red @ (" + row_index + "," + col_index + ")";
-			document.getElementById("debug1").innerHTML = debugStr;
+			rows_tracker[row_index][col_index] = 2;
 		}
 
 		totalMoves += 1;
@@ -134,7 +139,7 @@ function checkForVictory()
 	inARow = 0;
 
 	// check horizontal win
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < 8; i++)
 	{
 		if (checkBox(player, row_index, i))
 		{
@@ -146,40 +151,114 @@ function checkForVictory()
 	}
 	inARow = 0;
 	
-	// check diag win
+	// check diag win vertical, starting at first row first column
 	for (i = 0; i < 3; i++)
 	{
-		//
+		// start with row 3 col 1 where you index both row/col up every time
+		//		index row down, index row down
+		// row 3 col 1, row 4 col 2, row 5 col 3, ...
+		// row 2 col 1, row 3 col 2, row 4 col 3, ...
+		// row 1 col 1, row 2 col 2, row 3 col 3, ...
+		for (j = 0; i + j < 6; j++)
+		{
+			if (checkBox(player, i + j, j))
+			{
+				inARow += 1;
+			}
+			else{inARow = 0;}
+			if (inARow >= 4){printWin(player);}
+		}
 	}
-	if (inARow == 3){printWin(player);}
-	else {inARow = 0;}
+	inARow = 0;
 
-	// check opposite diag win
+	
+	// check diag win horizontal, starting first row, second column
+	for (i = 1; i < 5; i++)
+	{
+		// start with row 1 col 2 where you index both row/col up every time
+		//		index col up, index col up
+		// row 1 col 2, row 2 col 3, ...
+		// row 1 col 3, row 2 col 4, ...
+		// ...
+		// row 1 col 5, row 2 col 6, ...
+		for (j = 0; j < 6; j++)
+		{
+			if (i + j > 7){continue;} // if you hit the far right edge
+
+			if (checkBox(player, j, i + j))
+			{
+				inARow += 1;
+			}
+			else{inARow = 0;}
+			if (inARow >= 4){printWin(player);}
+		}
+	}
+	inARow = 0;
+	
+
+	// check anti-diag win vertical, starting at first row first column
 	for (i = 0; i < 3; i++)
 	{
-		//
+		for (j = 0; i + j < 6; j++)
+		{
+			if (checkBox(player, i + j, 7 - j))
+			{
+				inARow += 1;
+			}
+			else{inARow = 0;}
+			if (inARow >= 4){printWin(player);}
+		}
 	}
-	if (inARow == 3){printWin(player);}
-	else {inARow = 0;}
+	inARow = 0;
+
+	
+	// check anti-diag win horizontal, starting first row, second column
+	for (i = 1; i < 5; i++)
+	{
+		for (j = 0; j < 6; j++)
+		{
+			if (i + j > 7){continue;} // if you hit the far left edge
+
+			if (checkBox(player, j, 7 - (i + j)))
+			{
+				inARow += 1;
+			}
+			else{inARow = 0;}
+			if (inARow >= 4){printWin(player);}
+		}
+	}
+	inARow = 0;
 }
 
 function checkBox(playerNum, row, col)
 {
 	if (playerNum == 1)
 	{
-		return rows[row][col].className.match(/(?:^|\s)p1(?!\S)/);
+		return rows_tracker[row][col] == 1;
 	}
 	else if (playerNum == 2)
 	{
-		return rows[row][col].className.match(/(?:^|\s)p2(?!\S)/);
+		return rows_tracker[row][col] == 2;
 	}
 	return false;
 }
 
 function printWin(playerNum)
 {
-	document.getElementById("announcementText").innerHTML = "Player " + player + " WINS!";
+	document.getElementById("announcementText").innerHTML = "Player " + playerNum + " WINS!";
+	endGame();
 }
+
+function endTurn()
+{
+	// send array to AI or Firebase and wait until it's your turn again
+}
+
+function endGame()
+{
+	// send player back to homepage?
+}
+
 
 var socket = io.connect();
 // socket.on('connection', function(data){

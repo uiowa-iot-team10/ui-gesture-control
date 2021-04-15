@@ -3,17 +3,24 @@ var totalMoves = 0;
 
 document.onkeydown = interpKeydown;
 
+// Internal array keeping track of where X's and O's were put
+var rows_tracker = []
+
+// Array of actual page elements to add X's and O's
 var row_groups = document.getElementById("ticTacToeBox").children;
 var rows = [];
 for (i = 0; i < row_groups.length; i++)
 {
 	rows[i] = row_groups[i].children;
+	rows_tracker[i] = [];
 	for (j = 0; j < rows[i].length; j++)
 	{
 		rows[i][j].setAttribute('tabindex', '0');
+		rows_tracker[i][j] = 0; // fill the tracker with 0's to represent empty squares
 	}
 }
 
+// Keeps track of where on the board the user is at
 var row_index = 0;
 var col_index = 0;
 
@@ -85,7 +92,7 @@ function setNewFocus(direction)
 	}
 	else if (direction == 'INPUT')
 	{
-		if (rows[row_index][col_index].className.match(/(?:^|\s)ex(?!\S)/) || rows[row_index][col_index].className.match(/(?:^|\s)oh(?!\S)/))
+		if (rows_tracker[row_index][col_index] != 0)
 		{
 			document.getElementById("debug1").innerHTML = "Put Neither";
 			return; // if there is already an X or O there don't let a new one get put down
@@ -94,11 +101,13 @@ function setNewFocus(direction)
 		{
 			rows[row_index][col_index].className += " ex";
 			document.getElementById("debug1").innerHTML = "Put X";
+			rows_tracker[row_index][col_index] = 1;
 		}
 		else
 		{
 			rows[row_index][col_index].className += " oh";
 			document.getElementById("debug1").innerHTML = "Put O";
+			rows_tracker[row_index][col_index] = 2;
 		}
 
 		totalMoves += 1;
@@ -175,18 +184,29 @@ function checkBox(playerNum, row, col)
 {
 	if (playerNum == 1)
 	{
-		return rows[row][col].className.match(/(?:^|\s)ex(?!\S)/);
+		return rows_tracker[row][col] == 1;
 	}
 	else if (playerNum == 2)
 	{
-		return rows[row][col].className.match(/(?:^|\s)oh(?!\S)/);
+		return rows_tracker[row][col] == 2;
 	}
 	return false;
 }
 
 function printWin(playerNum)
 {
-	document.getElementById("announcementText").innerHTML = "Player " + player + " WINS!";
+	document.getElementById("announcementText").innerHTML = "Player " + playerNum + " WINS!";
+	endGame();
+}
+
+function endTurn()
+{
+	// send array to AI or Firebase and wait until it's your turn again
+}
+
+function endGame()
+{
+	// send player back to homepage?
 }
 
 var socket = io.connect();
