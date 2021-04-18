@@ -101,7 +101,7 @@ io_client.on('connection', function(socket){
             'active_players': 1,
             'moves': [],
             'current_moves': {
-                [data.username]: null
+                [username]: null
             },
             'winner': null
         };
