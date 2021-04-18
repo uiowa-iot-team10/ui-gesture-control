@@ -37,8 +37,54 @@
 
         <section id = "user_welcome">
           <h2 id="welcome_message">Welcome, </h2>
-          <button type="button" style="max-width: 15%;" onclick="sign_out()" class="btn btn-primary btn-block"> Sign Out  </button>
+          <button type="button" style="max-width: 10%;" onclick="sign_out()" class="btn btn-primary btn-block"> Sign Out </button>
+          <br>
+          <a href="" class="btn btn-primary btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalCreateRoomForm">Create a Room</a>
         </section>
+
+        <div class="modal fade" id="modalCreateRoomForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Create a Room</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body mx-3">
+                <form method="POST" action="javascript:create_room()">
+                  <div class="form-group">
+                    <input type="text" id="room-name" class="form-control validate" placeholder="Room Name" required>
+                    <small id="roomHelp" class="form-text text-muted">Nice!</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="room-game">Game</label>
+                    <select id="room-game" class="form-control mb-3" aria-label="form-control example">
+                      <option selected value="1">Tic Tac Toe</option>
+                      <option value="2">Connect4</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table id="rooms" style="margin: 0 auto; max-width: 70%;" class="table table-dark table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Host</th>
+              <th scope="col">Game</th>
+              <th scope="col">Players</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
 
         <section id = "info">
           <p id = "status" class = "notconnected">Server: Not Connected!</p>
