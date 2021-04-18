@@ -188,3 +188,68 @@ a {
     color: white;
     font-size: 3rem;
 }
+
+#connect_section{
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0 auto;
+
+}
+#return_section{
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0 auto;
+    margin-top: 1rem;
+}
+#device_connection_section{
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0 auto;
+    margin-top: 1rem;
+}
+
+
+#connect_button{
+    font-size: 2rem;
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+    color:gold;
+    background-color: black;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.25rem #999;
+}
+#connect_button:hover{
+    background-color: #3e8e41;
+}
+#connect_button:active{
+    background-color: #3e8e41;
+    box-shadow: 0 0.25rem #666;
+    transform: translateY(0.5rem);
+}
+
+#main_page_button{
+    font-size: 2rem;
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+    color:gold;
+    background-color: black;
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.25rem #999;
+}
+#main_page_button:hover{
+    background-color: #3e8e41;
+}
+#main_page_button:active{
+    background-color: #3e8e41;
+    box-shadow: 0 0.25rem #666;
+    transform: translateY(0.5rem);
+}
+

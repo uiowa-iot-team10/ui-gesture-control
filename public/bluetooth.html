@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>IoT Team 10</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="/public/styles/main_style.css">
+    </head>
+    <body>
+        <div id = "screen">
+            <header>
+                <section id = "settings">
+                    <span id="icon">
+                      <i id = "fa" class="fa fa-bar-chart fa-lg"></i>
+                    </span>
+                    <span id="icon">
+                      <i id = "fa" class="fa fa-user-o fa-lg"></i>
+                    </span>
+                  </section>
+            </header>
+       
+        <div id='content'>
+            <div id='screen'>
+                <p id='connect_section'>Connect to Arduino Nano 33 Sense BLE: <button id="connect_button" onclick="testFunction()">Connect!</button> </p>
+                <p id='return_section'> Return to main page: <button id='main_page_button' onclick="changePage('/')">Main Page</button> </p>
+                <p id="device_connection_section">Device not connected.</p>
+            </div>
+        </div>   
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/public/js/BLE_Connect.js"></script>
+    </body>
+</html> 
