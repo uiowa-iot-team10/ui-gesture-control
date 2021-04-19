@@ -1,11 +1,17 @@
-const express             = require('express');
-const app                 = express();
-const http_client         = require('http').createServer(app);
-const sio                 = require('socket.io');
-const io_client           = sio(http_client);
+const express                = require('express');
+const app                    = express();
+const http_client            = require('http').createServer(app);
+const sio                    = require('socket.io');
+const io_client              = sio(http_client);
 const { createBluetooth }    = require('node-ble');
 const { bluetooth, destroy } = createBluetooth();
+var rdb                      = require( './rdb' );
+var util                     = require('util');
 
+// const EventEmitter = require('events');
+// EventEmitter.defaultMaxListeners = 20;
+// const events = new EventEmitter();
+// events.setMaxListeners(20);
 
 var CLIENT_PORT = process.env.PORT || 80;
 
@@ -25,10 +31,8 @@ const GYROX_CHARACTERISTIC_UUID    = '19B10011-E8F2-537E-4F6C-D104768A1214';
 const DATA_SERVICE_UUID            = '19B10010-E8F2-537E-4F6C-D104768A1214';
 const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
 
-
 var device_list = [];
 var MAC_LIST = [];
-
 
 // To make other files accessible
 app.use(express.static(__dirname));
@@ -76,7 +80,49 @@ io_client.on('connection', function(socket){
     console.log("[LOG] A user is connected to server.");
     socket.emit('connection', "Connected!");
 
-    socket.on('disconnect', function(socket){
+    socket.on('get_active_rooms', (data) => {
+        rdb.database.ref("rooms").get().then((snapshot) => {
+            if (snapshot) {
+                // console.log(snapshot.val());
+                socket.emit("active_rooms", snapshot.val());
+            }
+            else socket.emit("active_rooms", null);
+        });
+    });
+
+    socket.on('delete_room', (data) => {
+        rdb.database.ref(util.format("rooms/%s", data.rid)).get().then((snapshot) => {
+            if (snapshot) {
+                rdb.database.ref(util.format("history/rooms/%s", data.rid)).set(snapshot);
+                rdb.database.ref(util.format("rooms/%s", data.rid)).remove();
+            }
+        });
+    });
+
+    socket.on('create_room', (data) => {
+        var username = data.username;
+        username = username.replace(/[.#$\[\]]/g,'-');
+        var config = {
+            'rid': util.format('%s-%s', username, data.time),
+            'rname': data.rname,
+            'host': data.displayName,
+            'host_email': data.username,
+            'player1': data.username,
+            'player2': null,
+            'create_time': data.time,
+            'game': data.game,
+            'active_players': 1,
+            'moves': [],
+            'current_moves': {
+                'player1': null,
+                'player2': null
+            },
+            'winner': null
+        };
+        rdb.database.ref(util.format("rooms/%s", config.rid)).set(config);
+    });
+
+    socket.on('disconnect', (data) => {
         console.log("User has disconnected.");
     });
     socket.on('BLE',function(data)
@@ -136,6 +182,7 @@ async function setBLE(address) {
     const device = await adapter.waitDevice(address);
     console.log( '[LOG] found device. attempting connection...');
     await device.connect();
+    await adapter.stopDiscovery();
     console.log( '[LOG] connected to device!' );
     isConnected = true;
 

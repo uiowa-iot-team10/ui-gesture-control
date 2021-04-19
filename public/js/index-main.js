@@ -38,21 +38,79 @@ function changePage(newPage)
     location.href = newPage;
 }
 
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+function create_room() {
+    var d = new Date();
+    var rn = document.querySelector("#room-name");
+    var rg = document.querySelector("#room-game");
+    var config = {
+        'username': firebase.auth().currentUser.email,
+        'displayName': firebase.auth().currentUser.displayName,
+        'rname': rn.value,
+        'time': d.getTime(),
+        'game': rg.options[rg.selectedIndex].text
+    };
+    socket.emit("create_room", config);
+    location.reload();
+}
+
 var socket = io();
 
 socket.on('connection', function(data){
-    var status = document.getElementById("status");
-    status.setAttribute("class", "connected");
-    status.innerHTML = "Server: Connected!";
+    // var status = document.getElementById("status");
+    // status.setAttribute("class", "connected");
+    // status.innerHTML = "Server: Connected!";
+    var rooms = document.querySelector("#rooms tbody");
+    removeAllChildNodes(rooms);
+    socket.emit("get_active_rooms", null);
 });
 
 socket.on('disconnect', function(data){
-    var status = document.getElementById("status");
-    status.setAttribute("class", "notconnected");
-    status.innerHTML = "Server: Not Connected!";
+    // var status = document.getElementById("status");
+    // status.setAttribute("class", "notconnected");
+    // status.innerHTML = "Server: Not Connected!";
 });
 
 socket.on('gesture', function(data){
     console.log(data);
     setNewFocus(data);
+});
+
+socket.on('active_rooms', (data) => {
+    // console.log("Retrieved active rooms...");
+    var rooms = document.querySelector("#rooms tbody");
+    removeAllChildNodes(rooms);
+    if (data) {
+        for (var key in data) {
+            if (data.hasOwnProperty(key)){
+                var room_info = data[key];
+                var newRow = rooms.insertRow(0);
+                var cell1  = newRow.insertCell(0);
+                var cell2  = newRow.insertCell(1);
+                var cell3  = newRow.insertCell(2);
+                var cell4  = newRow.insertCell(3);
+                var cell5  = newRow.insertCell(4);
+                var joinButton = document.createElement('button');
+                joinButton.type  = "button";
+                joinButton.style = "width: 100px;";
+                joinButton.rid   = room_info.rid;
+                joinButton.game  = room_info.game;
+                joinButton.onclick = function (){
+                    alert(this.rid);
+                };
+                joinButton.setAttribute("class", "btn btn-primary btn-block");
+                joinButton.textContent = "Join";
+                cell1.innerHTML = room_info.rname;
+                cell2.innerHTML = room_info.host;
+                cell3.innerHTML = room_info.game;
+                cell4.innerHTML = room_info.active_players + "/2";
+                cell5.appendChild(joinButton);
+            }
+        }
+    }
 });

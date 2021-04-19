@@ -1,16 +1,30 @@
 body, html {
-    background: url("/public/media/blue_blue_bg.jpg") no-repeat center center fixed;
-    background-size: cover;
-    -webkit-background-size: cover;
+    /* background: url("/public/media/blue_blue_bg.jpg") no-repeat center center fixed;
+    background-size: cover; */
+    /* -webkit-background-size: cover;
     -moz-background-size: cover;
-    -o-background-size: cover;
+    -o-background-size: cover; */
+    background: #282d31 !important;
     width: 100%;
     height: 100%;
     padding: 0;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    --table-width: 100%; /* Or any value, this will change dinamically */
 }
+
+tbody {
+    display:block;
+    max-height:500px;
+    overflow-y: auto;
+}
+thead, tbody tr {
+    display: table;
+    width: var(--table-width);
+    table-layout: fixed;
+}
+
 
 a {
     color: inherit;
@@ -106,11 +120,17 @@ a {
 
 #game-tweets{
     overflow: hidden;
-    height: 30%;
-    width: 47%;
-    margin-bottom: 1.5rem;
-    border: 0.25rem solid white;
-    margin-left: 5%;
+    height: 100%;
+    border: 0.01rem solid white;
+    border-radius: 5px;
+}
+
+#main-row-field {
+    height: 100%;
+}
+
+#main-grid {
+    height: 70%;
 }
 
 #ticTacToeBox {
