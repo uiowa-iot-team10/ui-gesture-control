@@ -69,6 +69,10 @@ app.get('/waiting_room', (req, res) => {
     res.sendFile(__dirname + '/public/waiting_room.html');
 });
 
+app.get('/stats', (req, res) => {
+    res.sendFile(__dirname + '/public/stats.html');
+});
+
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
     res.status(404).send("Sorry, that route doesn't exist.");
