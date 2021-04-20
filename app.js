@@ -7,6 +7,7 @@ const { createBluetooth }    = require('node-ble');
 const { bluetooth, destroy } = createBluetooth();
 var rdb                      = require( './rdb' );
 var util                     = require('util');
+const { createHash, }        = require('crypto');
 
 // const EventEmitter = require('events');
 // EventEmitter.defaultMaxListeners = 20;
@@ -80,6 +81,10 @@ io_client.on('connection', function(socket){
     console.log("[LOG] A user is connected to server.");
     socket.emit('connection', "Connected!");
 
+    socket.on("create_user_database", (data) => {
+        rdb.database.ref(util.format("users/%s", data.email.replace(/[.#$\[\]]/g,'-'))).set(data);
+    });
+
     socket.on('get_active_rooms', (data) => {
         rdb.database.ref("rooms").get().then((snapshot) => {
             if (snapshot) {
@@ -100,24 +105,23 @@ io_client.on('connection', function(socket){
     });
 
     socket.on('create_room', (data) => {
-        var username = data.username;
-        username = username.replace(/[.#$\[\]]/g,'-');
+        var rid = createHash('sha3-256').update(util.format("%s-%s", data.username, data.time)).digest('hex');
         var config = {
-            'rid': util.format('%s-%s', username, data.time),
+            'rid': rid,
             'rname': data.rname,
             'host': data.displayName,
             'host_email': data.username,
             'player1': data.username,
-            'player2': null,
+            'player2': -1,
             'create_time': data.time,
             'game': data.game,
-            'active_players': 1,
+            'active_players': 0,
             'moves': [],
             'current_moves': {
-                'player1': null,
-                'player2': null
+                'player1': -1,
+                'player2': -1
             },
-            'winner': null
+            'winner': -1
         };
         rdb.database.ref(util.format("rooms/%s", config.rid)).set(config);
     });

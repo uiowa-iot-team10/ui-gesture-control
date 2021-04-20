@@ -11,6 +11,7 @@ function sign_up() {
 	var email    = document.getElementById("email").value;
 	var password = document.getElementById("password").value;
 	var passrep  = document.getElementById("passrepeat").value;
+	// var database = firebase.database();
 
 	firebase.auth().createUserWithEmailAndPassword(email, password)
 	.then((userCredential) => {
@@ -21,6 +22,12 @@ function sign_up() {
 			url: "http://raspberrypi.local"
 		};
 		user.sendEmailVerification().then(function() {
+			// console.log(email.replace(/[.#$\[\]]/g,'-'));
+			socket.emit("create_user_database", {
+				'email': email,
+				'name': name
+			});
+			// TO-DO: Change this with a modal pop-up.
 			if (window.confirm("[SUCCESS] Please check your email for your account verification."))
 				window.location.assign("/");
 		}).catch(function(error) {
@@ -52,3 +59,5 @@ function validate_inputs() {
 	passrepeat.setCustomValidity(password.value.length < 6 ? "Passwords should be longer than 6 characters." : "");
 	email.setCustomValidity(ValidateEmail(email.value));
 }
+
+var socket = io();
