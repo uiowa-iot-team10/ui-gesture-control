@@ -56,7 +56,6 @@ function create_room() {
         'game': rg.options[rg.selectedIndex].text
     };
     socket.emit("create_room", config);
-    location.reload();
 }
 
 var socket = io();
@@ -81,8 +80,14 @@ socket.on('gesture', function(data){
     setNewFocus(data);
 });
 
+socket.on("room_ready", (data) => {
+    sessionStorage.setItem("rid", data.rid);
+    sessionStorage.setItem("pid", data.pid);
+    sessionStorage.setItem("game", data.game);
+    window.location.replace("/waiting_room");
+});
+
 socket.on('active_rooms', (data) => {
-    // console.log("Retrieved active rooms...");
     var rooms = document.querySelector("#rooms tbody");
     removeAllChildNodes(rooms);
     if (data) {
@@ -101,7 +106,10 @@ socket.on('active_rooms', (data) => {
                 joinButton.rid   = room_info.rid;
                 joinButton.game  = room_info.game;
                 joinButton.onclick = function (){
-                    alert(this.rid);
+                    sessionStorage.setItem("rid", this.rid);
+                    sessionStorage.setItem("pid", "player2");
+                    sessionStorage.setItem("game", this.game);
+                    location.href = "/waiting_room";
                 };
                 joinButton.setAttribute("class", "btn btn-primary btn-block");
                 joinButton.textContent = "Join";

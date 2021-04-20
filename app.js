@@ -26,7 +26,6 @@ var GESTURES    = {
     4: "INPUT"
 };
 
-//07:EF:6F:A9:54:00
 var ARDUINO_BLUETOOTH_ADDR         = '';
 const GYROX_CHARACTERISTIC_UUID    = '19B10011-E8F2-537E-4F6C-D104768A1214';
 const DATA_SERVICE_UUID            = '19B10010-E8F2-537E-4F6C-D104768A1214';
@@ -66,6 +65,9 @@ app.get('/connect4', (req, res) => {
     res.sendFile(__dirname + '/public/games/connect4.html');
 });
 
+app.get('/waiting_room', (req, res) => {
+    res.sendFile(__dirname + '/public/waiting_room.html');
+});
 
 // If path doesn't exists give a message
 app.use(function(req, res, next) {
@@ -88,8 +90,11 @@ io_client.on('connection', function(socket){
     socket.on('get_active_rooms', (data) => {
         rdb.database.ref("rooms").get().then((snapshot) => {
             if (snapshot) {
-                // console.log(snapshot.val());
-                socket.emit("active_rooms", snapshot.val());
+                var rooms = {}
+                for (var rid in snapshot.val()){
+                    if (snapshot.val()[rid].active_players < 2) rooms[rid] = snapshot.val()[rid]
+                }
+                socket.emit("active_rooms", rooms);
             }
             else socket.emit("active_rooms", null);
         });
@@ -98,11 +103,22 @@ io_client.on('connection', function(socket){
     socket.on('delete_room', (data) => {
         rdb.database.ref(util.format("rooms/%s", data.rid)).get().then((snapshot) => {
             if (snapshot) {
-                rdb.database.ref(util.format("history/rooms/%s", data.rid)).set(snapshot);
+                rdb.database.ref(util.format("history/rooms/%s", data.rid)).set(snapshot.val());
                 rdb.database.ref(util.format("rooms/%s", data.rid)).remove();
             }
         });
     });
+
+    socket.on("host_waiting", (data) => {
+        rdb.database.ref(util.format("rooms/%s/active_players", data.rid)).on('value', async (current_active_players) => {
+            if (current_active_players.val() == 2) {
+                socket.emit("game_ready", {
+                    'game': data.game
+                });
+                rdb.database.ref(util.format("rooms/%s/active_players", rid)).off('value');
+            }
+        });
+    })
 
     socket.on('create_room', (data) => {
         var rid = createHash('sha3-256').update(util.format("%s-%s", data.username, data.time)).digest('hex');
@@ -115,8 +131,8 @@ io_client.on('connection', function(socket){
             'player2': -1,
             'create_time': data.time,
             'game': data.game,
-            'active_players': 0,
-            'moves': [],
+            'active_players': 1,
+            'moves': -1,
             'current_moves': {
                 'player1': -1,
                 'player2': -1
@@ -124,6 +140,30 @@ io_client.on('connection', function(socket){
             'winner': -1
         };
         rdb.database.ref(util.format("rooms/%s", config.rid)).set(config);
+        socket.emit("room_ready", {
+            'rid': rid,
+            'pid': "player1",
+            'game': (data.game == "Tic Tac Toe") ? "tic-tac-toe" : "connect4"
+        });
+    });
+
+    socket.on("increment_active_players", (data) => {
+        rdb.database.ref(util.format("rooms/%s/", data.rid)).get().then((snapshot) => {
+            if (snapshot && snapshot.val().game == data.game) {
+                var active_players = snapshot.val().active_players;
+                if (active_players < 2) {
+                    active_players++;
+                    rdb.database.ref(util.format("rooms/%s/%s", data.rid, data.pid)).set(data.email);
+                    rdb.database.ref(util.format("rooms/%s/active_players", data.rid)).set(active_players);
+                    if (active_players == 2) {
+                        const session_game = (data.game == "Tic Tac Toe") ? "tic-tac-toe" : "connect4";
+                        socket.emit("game_ready", {
+                            'game': session_game
+                        });
+                    }
+                }
+            }
+        });
     });
 
     socket.on('disconnect', (data) => {

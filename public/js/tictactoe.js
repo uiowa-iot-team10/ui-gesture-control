@@ -1,3 +1,7 @@
+const rid  = sessionStorage.getItem("rid");
+const pid  = sessionStorage.getItem("pid");
+const game = sessionStorage.getItem("game");
+
 var player = 1;
 var totalMoves = 0;
 

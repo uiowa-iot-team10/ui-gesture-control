@@ -273,3 +273,15 @@ a {
     transform: translateY(0.5rem);
 }
 
+#waiting-room-message { 
+    height: 50%;
+    position: relative;
+}
+#waiting-room-message h1 {
+    margin: 0;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
