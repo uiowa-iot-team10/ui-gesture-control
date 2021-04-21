@@ -56,22 +56,14 @@ function create_room() {
 
 socket.on('send_user_game_data', (data) =>
 {
-    var total_games_played = data.total_games_played;
-    var total_games_won = data.total_games_won;
-    var total_games_lost = data.total_games_lost;
-    var connect4_wins = data.connect4_wins;
-    var connect4_losses = data.connect4_losses;
-    var tictactoe_wins = data.tictactoe_wins;
-    var tictactoe_losses = data.tictactoe_losses;
-
-    $('#total_games').html(total_games_played.toString());
-    $('#total_games_won').html(total_games_won.toString());
-    $('#total_games_lost').html(total_games_lost.toString());
-    $('#rating').html(calculateRating(total_games_won,total_games_lost).toString());
-    $('#connect4Win').html(connect4_wins.toString());
-    $('#connect4Loss').html(connect4_losses.toString());
-    $('#tictactoeWin').html(tictactoe_wins.toString());
-    $('#tictactoeLoss').html(tictactoe_losses.toString());
+    $('#total_games').html(data.total_games_played.toString());
+    $('#total_games_won').html(data.total_games_won.toString());
+    $('#total_games_lost').html(data.total_games_lost.toString());
+    $('#rating').html(calculateRating(data.total_games_won,data.total_games_lost).toString());
+    $('#connect4Win').html(data.connect4_wins.toString());
+    $('#connect4Loss').html(data.connect4_losses.toString());
+    $('#tictactoeWin').html(data.tictactoe_wins.toString());
+    $('#tictactoeLoss').html(data.tictactoe_losses.toString());
 
     google.charts.load('current',{'packages':['corechart']});
     google.charts.setOnLoadCallback(drawChart);
