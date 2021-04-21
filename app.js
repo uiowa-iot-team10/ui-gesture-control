@@ -77,6 +77,7 @@ app.get('/test', function(req, res) {
 	res.sendFile(__dirname + '/public/test/index.html');
 });
 
+
 // Socket stuff
 io_client.on('connection', function(socket){
     console.log("[LOG] A user is connected to server.");
@@ -185,13 +186,22 @@ io_client.on('connection', function(socket){
     socket.on('disconnect', (data) => {
         console.log("User has disconnected.");
     });
+
     socket.on('BLE',function(data)
     {
         if(!isConnected)
         {
             findDevices();
         }
-        setTimeout(() => {if(isConnected){socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");}},5000);});
+        setTimeout(() => {if(isConnected){socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");}},5000);
+    });
+    
+    // function to query child process in an AI game of tictactoe or connect4
+    socket.on('aiQuery', function(data){
+        queryAI(data.toString());
+    });
+
+    
 });
 
 http_client.listen(CLIENT_PORT, function(){
@@ -260,3 +270,19 @@ async function setBLE(address) {
         io_client.sockets.emit("gesture",GESTURES[buffer[0]]);
     });
  }
+
+
+function queryAI(qData) {
+
+    // string to be returned
+    var rtrnStr = "";
+
+    // send the string to AI by just calling the python script with the current game state and getting the AI's response
+    var spawn = require("child_process").spawn;
+    var process = spawn('python3',["./inference.py", qData] );
+
+    process.stdout.on('data', function(data) {
+        rtrnStr = data.toString();
+        io_client.sockets.emit("aiReturn", rtrnStr);
+    });
+}
