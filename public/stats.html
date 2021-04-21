@@ -14,6 +14,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="/public/js/firebase-init.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/public/js/stats.js"></script>
@@ -85,7 +86,48 @@
           </div>
         </div>
         <div id="waiting-room-message">
-            <h1 class="display-5 text-light text-center">Stats here.</h1>
+          <table class="table table-dark">
+            <thead>
+              <tr>
+                <th scope="col">Game</th>
+                <th scope="col">Wins</th>
+                <th scope="col">Losses</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Tic-Tac-Toe</th>
+                <td id="tictactoeWin"></td>
+                <td id="tictactoeLoss"></td>
+              </tr>
+              <tr>
+                <th scope="row">Connect4</th>
+                <td id='connect4Win'></td>
+                <td id='connect4Loss'></td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="WinLossRatio">
+            <table class="table table-dark">
+              <thead>
+                <tr>
+                  <th scope="col">Total Games Played</th>
+                  <th scope="col">Total Games Won</th>
+                  <th scope="col">Total Games Lost</th>
+                  <th scope="col">Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td id="total_games"></td>
+                  <td id="total_games_won"></td>
+                  <td id="total_games_lost"></td>
+                  <td id="rating">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+        <div id='piechart'></div>
 </body>
 </html>

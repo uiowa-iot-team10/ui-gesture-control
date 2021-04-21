@@ -25,7 +25,14 @@ function sign_up() {
 			// console.log(email.replace(/[.#$\[\]]/g,'-'));
 			socket.emit("create_user_database", {
 				'email': email,
-				'name': name
+				'name': name,
+				'TotalGamesPlayed': 0,
+				'TotalGamesWon': 0,
+				'TotalGamesLost': 0,
+				'Connect4Wins': 0,
+				'Connect4Losses': 0,
+				'TicTacToeWins': 0,
+				'TicTacToeLosses': 0
 			});
 			// TO-DO: Change this with a modal pop-up.
 			if (window.confirm("[SUCCESS] Please check your email for your account verification."))

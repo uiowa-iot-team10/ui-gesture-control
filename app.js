@@ -89,6 +89,31 @@ io_client.on('connection', function(socket){
 
     socket.on("create_user_database", (data) => {
         rdb.database.ref(util.format("users/%s", data.email.replace(/[.#$\[\]]/g,'-'))).set(data);
+
+        rdb.database.ref(util.format("users/%s", data.email.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
+        {
+            var total_games_played = snapshot.val().TotalGamesPlayed;
+            var total_games_won = snapshot.val().TotalGamesWon;
+            var total_games_lost = snapshot.val().TotalGamesLost;
+            var connect4_wins = snapshot.val().Connect4Wins;
+            var connect4_losses = snapshot.val().Connect4Losses;
+            var tictactoe_wins = snapshot.val().TicTacToeWins;
+            var tictactoe_losses = snapshot.val().TicTacToeLosses;
+            var ELO = snapshot.val().ELO;
+            var stats = {
+                'total_games_played': total_games_played,
+                'total_games_won': total_games_won,
+                'total_games_lost': total_games_lost,
+                'connect4_wins': connect4_wins,
+                'connect4_losses': connect4_losses,
+                'tictactoe_wins': tictactoe_wins,
+                'tictactoe_losses': tictactoe_losses,
+                'ELO': ELO
+            };
+            socket.emit('send_user_game_data',stats);
+        });
+
+        
     });
 
     socket.on('get_active_rooms', (data) => {
@@ -110,6 +135,30 @@ io_client.on('connection', function(socket){
                 rdb.database.ref(util.format("history/rooms/%s", data.rid)).set(snapshot.val());
                 rdb.database.ref(util.format("rooms/%s", data.rid)).remove();
             }
+        });
+    });
+
+    socket.on('get_user_game_data',(data) =>
+    {
+        rdb.database.ref(util.format("users/%s", data.email.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
+        {
+            var total_games_played = snapshot.val().TotalGamesPlayed;
+            var total_games_won = snapshot.val().TotalGamesWon;
+            var total_games_lost = snapshot.val().TotalGamesLost;
+            var connect4_wins = snapshot.val().Connect4Wins;
+            var connect4_losses = snapshot.val().Connect4Losses;
+            var tictactoe_wins = snapshot.val().TicTacToeWins;
+            var tictactoe_losses = snapshot.val().TicTacToeLosses;
+            var stats = {
+                'total_games_played': total_games_played,
+                'total_games_won': total_games_won,
+                'total_games_lost': total_games_lost,
+                'connect4_wins': connect4_wins,
+                'connect4_losses': connect4_losses,
+                'tictactoe_wins': tictactoe_wins,
+                'tictactoe_losses': tictactoe_losses,
+            };
+            socket.emit('send_user_game_data',stats);
         });
     });
 
