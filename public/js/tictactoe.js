@@ -2,8 +2,29 @@ const rid  = sessionStorage.getItem("rid");
 const pid  = sessionStorage.getItem("pid");
 const game = sessionStorage.getItem("game");
 
+
+var config = null;
+
 var player = 1;
 var totalMoves = 0;
+
+
+
+var socket = io.connect();
+
+firebase.auth().onAuthStateChanged(function(user) {
+	if (user == null) {
+		window.location.replace("/login");
+	} else if (user && !user.emailVerified) {
+		// TO-DO: Put an alert to inform user to verify their account
+		window.confirm("VERIFY YOUR EMAIL!!!!");
+		sign_out();
+		window.location.replace("/login");
+	}
+	else {
+		socket.emit('getPlayerList',rid);
+	}
+});
 
 document.onkeydown = interpKeydown;
 
@@ -200,6 +221,14 @@ function checkBox(playerNum, row, col)
 function printWin(playerNum)
 {
 	document.getElementById("announcementText").innerHTML = "Player " + playerNum + " WINS!";
+	if(playerNum == 1)
+	{
+		socket.emit('playerWin',config.player1);
+	}
+	else
+	{
+		socket.emit('playerWin',config.player2);
+	}
 	endGame();
 }
 
@@ -213,20 +242,15 @@ function endGame()
 	// send player back to homepage?
 }
 
-var socket = io.connect();
-// socket.on('connection', function(data){
-//     var status = document.getElementById("status");
-//     status.setAttribute("class", "connected");
-//     status.innerHTML = "Server: Connected!";
-// });
-
-// socket.on('disconnect', function(data){
-//     var status = document.getElementById("status");
-//     status.setAttribute("class", "notconnected");
-//     status.innerHTML = "Server: Not Connected!";
-// });
-
 socket.on('gesture', function(data){
 	console.log(data);
 	setNewFocus(data);
+});
+
+socket.on('tictactoe_game',(data)=>
+{
+	config = {
+		'player1': data.player1,
+		'player2': data.player2
+	};
 });
