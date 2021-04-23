@@ -144,6 +144,7 @@ function setNewFocus(direction)
 		console.log("row: " + row_index + " col: " + col_index);
 		socket.emit('moveCoord',{'rid': rid, 'row':row_index,'col':col_index, 'player':playerTurn});
 
+		playerTurn = (pid[pid.length - 1] == "1") ? "player2" : "player1";
 		totalMoves += 1;
 
 		// if no victory on board, end players turn
@@ -158,31 +159,34 @@ function setNewFocus(direction)
 	rows[row_index][col_index].focus();
 }
 
-socket.on('playerTurnDone',(data) =>
-{
-	playerTurn = data.player;
-});
+// socket.on('playerTurnDone',(data) =>
+// {
+// 	playerTurn = data.player;
+// });
 
 socket.on('move',(data)=>
 {
-	setTimeout(() => {
-		if(data.player == 'player1' && playerTurn == 'player2')
-	{
-		rows[data.row][data.col].className += " p1";
-		rows_tracker[data.row][data.col] = 1;
+	if (data.row != -1 || data.col != -1) {
+		setTimeout(() => {
+			if(pid == 'player1')
+			{
+				rows[data.row][data.col].className += " p2";
+				rows_tracker[data.row][data.col] = 2;
+			}
+			else
+			{
+				rows[data.row][data.col].className += " p1";
+				rows_tracker[data.row][data.col] = 1;
+			}
+			if(!checkForVictory())
+			{
+				row_index = 0;
+				playerTurn = pid;
+				// endTurn();
+			}
+		},500);
 	}
-	else
-	{
-		rows[data.row][data.col].className += " p2";
-		rows_tracker[data.row][data.col] = 2;
-	}
-	},500);
-	if(!checkForVictory())
-	{
-		row_index = 0;
-		endTurn();
-	}
-})
+});
 
 function checkForVictory()
 {
@@ -382,7 +386,7 @@ function endTurn()
 
 	// }
     // If its PvP
-	socket.emit('playerMove',{'rid': rid,'player':playerTurn});
+	socket.emit('playerMove',{'rid': rid, 'player':playerTurn});
 }
 
 function endGame()
