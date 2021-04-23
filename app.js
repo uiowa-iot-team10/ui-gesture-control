@@ -148,7 +148,7 @@ io_client.on('connection', function(socket){
             'create_time': data.time,
             'game': data.game,
             'active_players': 1,
-            'moves': -1,
+            'moves': [-1],
             'current_moves': {
                 'player1': {'row': -1, 'col': -1},
                 'player2': {'row': -1, 'col': -1}
@@ -184,6 +184,13 @@ io_client.on('connection', function(socket){
 
     socket.on('moveCoord',(data) => {
         rdb.database.ref(util.format("rooms/%s/current_moves/%s", data.rid, data.player)).set({'row': data.row, 'col': data.col});
+        rdb.database.ref(util.format("rooms/%s/moves", data.rid)).get().then((snapshot) => {
+            if (snapshot.val()) {
+                var moves = snapshot.val();
+                moves.push(data);
+                rdb.database.ref(util.format("rooms/%s/moves", data.rid)).set(moves);
+            }
+        });
     });
 
     socket.on("getPlayerList",(data) =>
@@ -257,16 +264,17 @@ io_client.on('connection', function(socket){
     {
         if(!isConnected)
         {
-            findDevices();
+            findDevices(socket);
         }
-        setTimeout(() => {if(isConnected){socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");}},5000);});
+        // setTimeout(() => {if(isConnected){socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");}},10000);
+    });
 });
 
 http_client.listen(CLIENT_PORT, function(){
 	console.log('[LOG] Listening for client side on *:' + CLIENT_PORT);
 });
 
-async function findDevices()
+async function findDevices(socket)
 {
     const adapter = await bluetooth.defaultAdapter();
     await adapter.startDiscovery();
@@ -293,7 +301,7 @@ async function findDevices()
             break;
         }
     }
-    setBLE(ARDUINO_BLUETOOTH_ADDR).then((ret) => {
+    setBLE(ARDUINO_BLUETOOTH_ADDR, socket).then((ret) => {
         if(ret) console.log(ret);
     }).catch((err) => {
         console.log ( );
@@ -302,7 +310,7 @@ async function findDevices()
 }
 
 // function now automatically connects to BLE Device(Arduino 33 BLE Sense) via bluetooth.
-async function setBLE(address) {
+async function setBLE(address, socket) {
     // Reference the BLE adapter and begin device discovery...s
     const adapter = await bluetooth.defaultAdapter();
     console.log( '[LOG] discovering...' );
@@ -327,4 +335,8 @@ async function setBLE(address) {
         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
         io_client.sockets.emit("gesture",GESTURES[buffer[0]]);
     });
+    if(isConnected)
+    {
+        socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");
+    }
  }
