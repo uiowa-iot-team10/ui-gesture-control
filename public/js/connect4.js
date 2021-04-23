@@ -26,7 +26,6 @@ socket.emit(pid + "_ready2play", {
 	"rid": rid
 });
 
-//var player = 1;
 var totalMoves = 0;
 var player = 1;
 var playerTurn = 'player1';
@@ -34,22 +33,7 @@ var rtrnStr;
 
 var AI = false;
 
-// If playing against AI
-// if (true)
-// {
-// 	player = 1;
-// 	player_turn = 1;
-// 	rtrnStr = "";
-// }
-// else // else playing against another player
-// {
-// 	player_turn = 1;
-// 	player = 0; // get from firebase?
-// }
-
-
 document.onkeydown = interpKeydown;
-
 
 // Internal array keeping track of where X's and O's were put
 var rows_tracker = []
@@ -147,22 +131,11 @@ function setNewFocus(direction)
 		playerTurn = (pid[pid.length - 1] == "1") ? "player2" : "player1";
 		totalMoves += 1;
 
-		// if no victory on board, end players turn
-		// if(!checkForVictory())
-		// {
-		// 	endTurn();
-		// }
-
 		// row_index back to 0 since you drop from the top in connect 4
 	}
 
 	rows[row_index][col_index].focus();
 }
-
-// socket.on('playerTurnDone',(data) =>
-// {
-// 	playerTurn = data.player;
-// });
 
 socket.on('move',(data)=>
 {
@@ -178,11 +151,13 @@ socket.on('move',(data)=>
 				rows[data.row][data.col].className += " p1";
 				rows_tracker[data.row][data.col] = 1;
 			}
+			row_index = data.row;
+			col_index = data.col;
 			if(!checkForVictory())
 			{
 				row_index = 0;
+				col_index = 0;
 				playerTurn = pid;
-				// endTurn();
 			}
 		},500);
 	}
@@ -210,6 +185,8 @@ function checkForVictory()
 	}
 	inARow = 0;
 
+
+	// TO-DO: maybe 8 columns?
 	// check horizontal win
     for (i = 0; i < 6; i++)
 	{
@@ -296,7 +273,7 @@ function checkForVictory()
 				inARow += 1;
 			}
 			else{inARow = 0;}
-			if (inARow >= 4){printWin(player);return true;}
+			if (inARow >= 4){printWin(playerTurn);return true;}
 		}
 	}
 	inARow = 0;
@@ -342,7 +319,6 @@ function printWin(playerNum)
 		};
 		socket.emit('playerWin',winner);
 	}
-	//endGame();
 }
 socket.on('printWinner',(data) =>
 {
@@ -358,37 +334,6 @@ socket.on('printWinner',(data) =>
 	}
 })
 
-function endTurn()
-{
-	// send array to AI, wait until player turn
-	// if (true && player == 1) // If its PvE
-	// {
-	// 	// string to be sent to AI
-	// 	var sendStr = "";
-
-	// 	// For each row, loop through each col
-	// 	for (i = 0; i < rows_tracker.length; i++)
-	// 	{
-	// 		for (j = 0; j < rows_tracker[i].length; j++)
-	// 		{
-	// 			// save chip to string w/ a ',' in between
-	// 			if (rows_tracker[i][j] == 1){sendStr = sendStr.concat("1");}
-	// 			else if (rows_tracker[i][j] == 2){sendStr = sendStr.concat("-1");}
-	// 			else{sendStr = sendStr.concat("0");}
-
-	// 			if (j < rows_tracker[i].length - 1){sendStr = sendStr.concat(",");}
-	// 		}
-	// 		// concat a '.' after each row
-	// 		if (i < rows_tracker.length - 1){sendStr = sendStr.concat(".");}
-	// 	}
-
-	// 	// socket.emit("aiQuery", sendStr);
-
-	// }
-    // If its PvP
-	socket.emit('playerMove',{'rid': rid, 'player':playerTurn});
-}
-
 function endGame()
 {
 	socket.emit('delete_room',{'rid':rid});
@@ -399,7 +344,7 @@ function endGame()
 		sessionStorage.removeItem("pid");
 		sessionStorage.removeItem("game");
 		location.href = '/';
-	},3000);
+	},10000);
 }
 
 
@@ -415,14 +360,3 @@ socket.on('connect4_game',(data)=>
 		'player2': data.player2
 	};
 });
-
-// socket.on('aiReturn', function(data){
-// 	rtrnStr = data;
-// 	document.getElementById("announcementText").innerHTML = rtrnStr;
-
-// 	// Change player to 2 (AI) set chip, change player back to 1
-// 	player = 2;
-// 	col_index = parseInt(rtrnStr);
-// 	setNewFocus('INPUT');
-// 	player = 1;
-// });

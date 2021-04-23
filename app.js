@@ -101,10 +101,10 @@ io_client.on('connection', function(socket){
 
     socket.on('delete_room', (data) => {
         rdb.database.ref(util.format("rooms/%s", data.rid)).get().then((snapshot) => {
-           // if (snapshot) {
+           if (snapshot.val()) {
                 rdb.database.ref(util.format("history/rooms/%s", data.rid)).set(snapshot.val());
                 rdb.database.ref(util.format("rooms/%s", data.rid)).remove();
-            //}
+            }
         });
     });
 
@@ -149,7 +149,6 @@ io_client.on('connection', function(socket){
             'game': data.game,
             'active_players': 1,
             'moves': -1,
-            'playerTurn': 'player1',
             'current_moves': {
                 'player1': {'row': -1, 'col': -1},
                 'player2': {'row': -1, 'col': -1}
@@ -183,21 +182,8 @@ io_client.on('connection', function(socket){
         });
     });
 
-    socket.on('playerMove',(data)=>
-    {
-        if(data.player == 'player1')
-        {
-            rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).set('player2');
-        }
-        if(data.player == 'player2')
-        {
-            rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).set('player1');
-        }
-    });
-
     socket.on('moveCoord',(data) => {
         rdb.database.ref(util.format("rooms/%s/current_moves/%s", data.rid, data.player)).set({'row': data.row, 'col': data.col});
-        // sockets.emit('move',data);
     });
 
     socket.on("getPlayerList",(data) =>
@@ -214,7 +200,6 @@ io_client.on('connection', function(socket){
                     socket.emit('connect4_game',config);
                 }
             }
-            //socket.emit('tictactoe_game',config);
         });
     });
 
@@ -230,10 +215,6 @@ io_client.on('connection', function(socket){
                 socket.emit("printWinner", {'name': winner.val()});
             }
         });
-
-        // rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).on('value', async (snapshot) => {
-        //     socket.emit('playerTurnDone',{'player':snapshot.val()});
-        // });
     });
 
     socket.on("player2_ready2play", (data) => {
@@ -248,14 +229,12 @@ io_client.on('connection', function(socket){
                 socket.emit("printWinner", {'name': winner.val()});
             }
         });
-
-        // rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).on('value', async (snapshot) => {
-        //     socket.emit('playerTurnDone',{'player':snapshot.val()});
-        // });
     });
 
     //Connect4Losses , Connect4Wins, TotalGamesLost , TotalGamesPlayed , TotalGamesWon 
     socket.on('playerWin',(data) => {
+        console.log("PLAYER WON: ");
+        console.log(data);
         rdb.database.ref(util.format("users/%s", data.winner.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
         {
             rdb.database.ref(util.format("users/%s/Connect4Wins",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().Connect4Wins + 1);
@@ -268,8 +247,7 @@ io_client.on('connection', function(socket){
             rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
             rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
         });
-        rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.winner);
-        // socket.emit("printWinner", data);
+        rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
     });
 
     socket.on('disconnect', (data) => {
