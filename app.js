@@ -204,13 +204,15 @@ io_client.on('connection', function(socket){
     {
         rdb.database.ref(util.format("rooms/%s/", data.rid)).get().then((snapshot) =>
         {
-            var config = {
-                'player1': snapshot.val().player1,
-                'player2': snapshot.val().player2
-            };
-            if(data.game = 'connect4')
-            {
-                socket.emit('connect4_game',config);
+            if (snapshot.val()) {
+                var config = {
+                    'player1': snapshot.val().player1,
+                    'player2': snapshot.val().player2
+                };
+                if(data.game = 'connect4')
+                {
+                    socket.emit('connect4_game',config);
+                }
             }
             //socket.emit('tictactoe_game',config);
         });
@@ -224,7 +226,7 @@ io_client.on('connection', function(socket){
         });
 
         rdb.database.ref(util.format("rooms/%s/winner", data.rid)).on('value', async (winner) => {
-            if (winner.val()) {
+            if (winner.val() && winner.val() != -1) {
                 socket.emit("printWinner", {'name': winner.val()});
             }
         });
@@ -242,7 +244,7 @@ io_client.on('connection', function(socket){
         });
 
         rdb.database.ref(util.format("rooms/%s/winner", data.rid)).on('value', async (winner) => {
-            if (winner.val()) {
+            if (winner.val() && winner.val() != -1) {
                 socket.emit("printWinner", {'name': winner.val()});
             }
         });
