@@ -134,7 +134,7 @@ io_client.on('connection', function(socket){
                 rdb.database.ref(util.format("rooms/%s/active_players", data.rid)).off('value');
             }
         });
-    })
+    });
 
     socket.on('create_room', (data) => {
         var rid = createHash('sha3-256').update(util.format("%s-%s", data.username, data.time)).digest('hex');
@@ -193,15 +193,11 @@ io_client.on('connection', function(socket){
         {
             rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).set('player1');
         }
-        rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).get().then((snapshot) =>
-            {
-                io_client.sockets.emit('playerTurnDone',{'player':snapshot.val()});
-            });
     });
 
     socket.on('moveCoord',(data) => {
-        io_client.sockets.emit('move',data);
-
+        rdb.database.ref(util.format("rooms/%s/current_moves/%s", data.rid, data.player)).set([data.row, data.col]);
+        // io_client.sockets.emit('move',data);
     });
 
     socket.on("getPlayerList",(data) =>
@@ -217,6 +213,28 @@ io_client.on('connection', function(socket){
                 socket.emit('connect4_game',config);
             }
             //socket.emit('tictactoe_game',config);
+        });
+    });
+
+    socket.on("player1_ready2play", (data) => {
+        rdb.database.ref(util.format("rooms/%s/current_moves/player2", data.rid)).on('value', async (target_move) => {
+            if (target_move.val()) {
+                socket.emit("move", target_move.val());
+            }
+        });
+        rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).on('value', async (snapshot) => {
+            socket.emit('playerTurnDone',{'player':snapshot.val()});
+        });
+    });
+
+    socket.on("player2_ready2play", (data) => {
+        rdb.database.ref(util.format("rooms/%s/current_moves/player1", data.rid)).on('value', async (target_move) => {
+            if (target_move.val()) {
+                socket.emit("move", target_move.val());
+            }
+        });
+        rdb.database.ref(util.format("rooms/%s/playerTurn", data.rid)).on('value', async (snapshot) => {
+            socket.emit('playerTurnDone',{'player':snapshot.val()});
         });
     });
 

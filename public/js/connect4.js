@@ -22,6 +22,10 @@ firebase.auth().onAuthStateChanged(function(user) {
 	}
 });
 
+socket.emit(pid + "_ready2play", {
+	"rid": rid
+});
+
 //var player = 1;
 var totalMoves = 0;
 var player = 1;
@@ -131,16 +135,14 @@ function setNewFocus(direction)
 		{
 			rows[row_index][col_index].className += " p1";
 			rows_tracker[row_index][col_index] = 1;
-			console.log("row: " + row_index + " col: " + col_index);
-			socket.emit('moveCoord',{'row':row_index,'col':col_index,'player':playerTurn});
 		}
 		else
 		{
 			rows[row_index][col_index].className += " p2";
 			rows_tracker[row_index][col_index] = 2;
-			console.log("row: " + row_index + " col: " + col_index);
-			socket.emit('moveCoord',{'row':row_index,'col':col_index,'player':playerTurn});
 		}
+		console.log("row: " + row_index + " col: " + col_index);
+		socket.emit('moveCoord',{'rid': rid, 'row':row_index,'col':col_index, 'player':playerTurn});
 
 		totalMoves += 1;
 
@@ -160,6 +162,7 @@ socket.on('playerTurnDone',(data) =>
 {
 	playerTurn = data.player;
 });
+
 socket.on('move',(data)=>
 {
 	setTimeout(() => {
