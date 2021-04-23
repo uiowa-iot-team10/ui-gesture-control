@@ -187,7 +187,7 @@ io_client.on('connection', function(socket){
         rdb.database.ref(util.format("rooms/%s/moves", data.rid)).get().then((snapshot) => {
             if (snapshot.val()) {
                 var moves = snapshot.val();
-                moves.push(data);
+                moves.push({'row': data.row, 'col': data.col});
                 rdb.database.ref(util.format("rooms/%s/moves", data.rid)).set(moves);
             }
         });
@@ -266,7 +266,6 @@ io_client.on('connection', function(socket){
         {
             findDevices(socket);
         }
-        // setTimeout(() => {if(isConnected){socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");}},10000);
     });
 });
 
