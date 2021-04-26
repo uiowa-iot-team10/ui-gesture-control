@@ -91,6 +91,6 @@ function drawChart()
   ['Losses', parseInt($('#total_games_lost').html())]
 ]);
   var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-  var options = {is3D: true,backgroundColor: 'transparent',colors:['blue','orange'],legend:{alignment: 'center', position: 'right', textStyle: {color:'white',fontSize:16}},chartArea:{width:'75%',height:'75%',right:10}};
+  var options = {is3D: true,backgroundColor: 'transparent',colors:['green','red'],legend:{alignment: 'center', position: 'right', textStyle: {color:'white',fontSize:16}},chartArea:{width:'75%',height:'75%',right:10}};
   chart.draw(data,options);
 }

@@ -1,9 +1,4 @@
 body, html {
-    /* background: url("/public/media/blue_blue_bg.jpg") no-repeat center center fixed;
-    background-size: cover; */
-    /* -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover; */
     background: #282d31 !important;
     width: 100%;
     height: 100%;
@@ -36,8 +31,6 @@ a {
 }
 
 #screen {
-    /* background: url(https://wallpapercave.com/wp/dLB5ai0.jpg);
-    background-size: contain; */
     width: 100%;
     height: 100vh;
     display: flex;
@@ -111,12 +104,7 @@ a {
 #status {
     margin-left: 10%;
 }
-.notconnected{
-    color: red;
-}
-.connected{
-    color: green;
-}
+
 
 #game-tweets{
     overflow: hidden;
@@ -209,29 +197,6 @@ a {
     font-size: 3rem;
 }
 
-#connect_section{
-    color: white;
-    font-size: 3rem;
-    font-weight: bold;
-    margin: 0 auto;
-
-}
-#return_section{
-    color: white;
-    font-size: 3rem;
-    font-weight: bold;
-    margin: 0 auto;
-    margin-top: 1rem;
-}
-#device_connection_section{
-    color: white;
-    font-size: 3rem;
-    font-weight: bold;
-    margin: 0 auto;
-    margin-top: 1rem;
-}
-
-
 #connect_button{
     font-size: 2rem;
     position: relative;
@@ -278,6 +243,19 @@ a {
     position: relative;
 }
 #waiting-room-message h1 {
+    margin: 0;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#bluetooth-screen { 
+    height: 50%;
+    position: relative;
+}
+#connect_section {
     margin: 0;
     position: absolute;
     top: 80%;

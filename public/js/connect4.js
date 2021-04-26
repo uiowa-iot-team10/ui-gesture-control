@@ -1,3 +1,23 @@
+firebase.auth().onAuthStateChanged(function(user) {
+	if (user == null) {
+		window.location.replace("/login");
+	} else if (user && !user.emailVerified) {
+		// TO-DO: Put an alert to inform user to verify their account
+		window.confirm("VERIFY YOUR EMAIL!!!!");
+		sign_out();
+		window.location.replace("/login");
+	}
+	else {
+		$("#welcome_message").text(user.displayName);
+		make_visible();
+	}
+});
+
+function make_visible() {
+	$("#content").removeAttr('hidden');
+	document.onkeydown = interpKeydown;
+}
+
 const rid  = sessionStorage.getItem("rid");
 const pid  = sessionStorage.getItem("pid");
 const game = sessionStorage.getItem("game");
@@ -185,10 +205,8 @@ function checkForVictory()
 	}
 	inARow = 0;
 
-
-	// TO-DO: maybe 8 columns?
 	// check horizontal win
-    for (i = 0; i < 6; i++)
+    for (i = 0; i < 7; i++)
 	{
 		if (checkBox(playerTurn, row_index, i))
 		{
@@ -336,15 +354,19 @@ socket.on('printWinner',(data) =>
 
 function endGame()
 {
+	$('#staticBackdrop').modal('toggle');
 	socket.emit('delete_room',{'rid':rid});
-
+	sessionStorage.removeItem("rid");
+	sessionStorage.removeItem("pid");
+	sessionStorage.removeItem("game");
 	setTimeout(function()
 	{
-		sessionStorage.removeItem("rid");
-		sessionStorage.removeItem("pid");
-		sessionStorage.removeItem("game");
 		location.href = '/';
 	},10000);
+}
+
+function leave_game() {
+	// TO-DO: If User click Leave Game button, make them loose and win the opponent. Do not forget to do socket.emit('delete_room')
 }
 
 
