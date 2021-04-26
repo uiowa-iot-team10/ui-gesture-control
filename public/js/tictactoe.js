@@ -2,14 +2,6 @@ const rid  = sessionStorage.getItem("rid");
 const pid  = sessionStorage.getItem("pid");
 const game = sessionStorage.getItem("game");
 
-
-var config = null;
-
-var player = 1;
-var totalMoves = 0;
-
-
-
 var socket = io.connect();
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -22,9 +14,16 @@ firebase.auth().onAuthStateChanged(function(user) {
 		window.location.replace("/login");
 	}
 	else {
-		socket.emit('getPlayerList',rid);
+		socket.emit('getPlayerList',{'rid': rid, 'game': game});
 	}
 });
+
+socket.emit(pid + "_ready2play", {
+	'rid': rid
+})
+
+var playerTurn = 'player1';
+var totalMoves = 0;
 
 document.onkeydown = interpKeydown;
 
@@ -53,35 +52,28 @@ rows[row_index][col_index].focus();
 
 function interpKeydown(e)
 {
-	if (e.keyCode == '39') // if right arrow, index + 1
+	if(pid == playerTurn)
 	{
-		setNewFocus('RIGHT');
-	}
-	else if (e.keyCode == '37') // else if left arrow, index - 1
-	{
-		setNewFocus('LEFT');
-	}
-	else if (e.keyCode == '38') // else if left arrow, index - 1
-	{
-		setNewFocus('UP');
-	}
-	else if (e.keyCode == '40') // else if left arrow, index - 1
-	{
-		setNewFocus('DOWN');
-	}
-	else if (e.keyCode == '13') // else if enter key, press down
-	{
-		setNewFocus('INPUT');
-	}
-
-	// TODO: REMOVE THIS, THIS IS ONLY TO TEST CHANGIN PLAYERS
-	else if (e.keyCode == '49') // else if enter key, press down
-	{
-		player = 1;
-	}
-	else if (e.keyCode == '50') // else if enter key, press down
-	{
-		player = 2;
+		if (e.keyCode == '39') // if right arrow, index + 1
+		{
+			setNewFocus('RIGHT');
+		}
+		else if (e.keyCode == '37') // else if left arrow, index - 1
+		{
+			setNewFocus('LEFT');
+		}
+		else if (e.keyCode == '38') // else if left arrow, index - 1
+		{	
+			setNewFocus('UP');
+		}
+		else if (e.keyCode == '40') // else if left arrow, index - 1
+		{
+			setNewFocus('DOWN');
+		}
+		else if (e.keyCode == '13') // else if enter key, press down
+		{
+			setNewFocus('INPUT');
+		}
 	}
 }
 
@@ -122,36 +114,59 @@ function setNewFocus(direction)
 			document.getElementById("debug1").innerHTML = "Put Neither";
 			return; // if there is already an X or O there don't let a new one get put down
 		}
-		else if (player == 1)
+		if (playerTurn == 'player1')
 		{
 			rows[row_index][col_index].className += " ex";
-			document.getElementById("debug1").innerHTML = "Put X";
+			//document.getElementById("debug1").innerHTML = "Put X";
 			rows_tracker[row_index][col_index] = 1;
 		}
 		else
 		{
 			rows[row_index][col_index].className += " oh";
-			document.getElementById("debug1").innerHTML = "Put O";
+			//document.getElementById("debug1").innerHTML = "Put O";
 			rows_tracker[row_index][col_index] = 2;
 		}
+		console.log('row:' + row_index + " col: " + col_index);
+		socket.emit('moveCoord',{'rid': rid, 'row':row_index,'col':col_index,'player':playerTurn});
 
+		playerTurn = (pid[pid.length -1] == '1') ? 'player2' : 'player1';
 		totalMoves += 1;
-
-		// check for victory on board
-		checkForVictory();
-		
-		// end players turn
-		// endTurn();
 	}
 
 	rows[row_index][col_index].focus();
 }
 
+socket.on('move',(data)=>
+{
+	if (data.row != -1 || data.col != -1) {
+		setTimeout(() => {
+			if(pid == 'player1')
+			{
+				rows[data.row][data.col].className += " oh";
+				rows_tracker[data.row][data.col] = 2;
+			}
+			else
+			{
+				rows[data.row][data.col].className += " ex";
+				rows_tracker[data.row][data.col] = 1;
+			}
+			row_index = data.row;
+			col_index = data.col;
+			if(!checkForVictory())
+			{
+				row_index = 0;
+				col_index = 0;
+				playerTurn = pid;
+			}
+		},500);
+	}
+});
+
 function checkForVictory()
 {
 	var inARow = 0;
 
-	document.getElementById("debug2").innerHTML = totalMoves;
+	//document.getElementById("debug2").innerHTML = totalMoves;
 
 	if (totalMoves > 8)
 	{
@@ -161,57 +176,57 @@ function checkForVictory()
 	// check vertical win
 	for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, i, col_index))
+		if (checkBox(playerTurn, i, col_index))
 		{
 			inARow += 1;
 		}
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(playerTurn); return true;}
 	else {inARow = 0;}
 
 	// check horizontal win
     for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, row_index, i))
+		if (checkBox(playerTurn, row_index, i))
 		{
 			inARow += 1;
 		}
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(playerTurn); return true;}
 	else {inARow = 0;}
 	
 	// check diag win
 	for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, i, i))
+		if (checkBox(playerTurn, i, i))
 		{
 			inARow += 1;
 		}
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(playerTurn); return true;}
 	else {inARow = 0;}
 
 	// check opposite diag win
 	var j = 2;
 	for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, j, i))
+		if (checkBox(playerTurn, j, i))
 		{
 			inARow += 1;
 		}
 		j--;
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(playerTurn); return true;}
 	else {inARow = 0;}
 }
 
 function checkBox(playerNum, row, col)
 {
-	if (playerNum == 1)
+	if (playerNum == 'player1')
 	{
 		return rows_tracker[row][col] == 1;
 	}
-	else if (playerNum == 2)
+	else if (playerNum == 'player2')
 	{
 		return rows_tracker[row][col] == 2;
 	}
@@ -220,27 +235,58 @@ function checkBox(playerNum, row, col)
 
 function printWin(playerNum)
 {
-	document.getElementById("announcementText").innerHTML = "Player " + playerNum + " WINS!";
-	if(playerNum == 1)
+	document.getElementById("announcementText").innerHTML = playerNum + " WINS!";
+	if(playerNum == 'player1')
 	{
-		socket.emit('playerWin',config.player1);
+		var winner = {
+			'winner': config.player1,
+			'loser': config.player2,
+			'game': game,
+			'name': 'player1',
+			'rid': rid
+		};
+		socket.emit('playerWin',winner);
 	}
 	else
 	{
-		socket.emit('playerWin',config.player2);
+		var winner = {
+			'winner': config.player2,
+			'loser': config.player1,
+			'game': game,
+			'name': 'player2',
+			'rid': rid
+		};
+		socket.emit('playerWin',winner);
 	}
-	endGame();
 }
 
-function endTurn()
-{
-	// send array to AI or Firebase and wait until it's your turn again
-}
+socket.on('printWinner',(data) => {
+	if(data.name == pid)
+	{
+		document.getElementById("announcementText").innerHTML = "You WON!";
+		endGame();
+	}
+	else
+	{
+		document.getElementById("announcementText").innerHTML = "You LOST!";
+		endGame();
+	}
+
+});
 
 function endGame()
 {
-	// send player back to homepage?
+	socket.emit('delete_room',{'rid':rid});
+
+	setTimeout(function()
+	{
+		sessionStorage.removeItem("rid");
+		sessionStorage.removeItem("pid");
+		sessionStorage.removeItem("game");
+		location.href = '/';
+	},10000);
 }
+
 
 socket.on('gesture', function(data){
 	console.log(data);

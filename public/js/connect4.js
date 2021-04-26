@@ -29,7 +29,6 @@ socket.emit(pid + "_ready2play", {
 var totalMoves = 0;
 var player = 1;
 var playerTurn = 'player1';
-var rtrnStr;
 
 var AI = false;
 
@@ -53,7 +52,6 @@ for (i = 0; i < row_groups.length; i++)
 }
 
 // Keeps track of where on the board the user is at
-var prev_index = 0;
 var row_index = 0;
 var col_index = 0;
 
