@@ -384,7 +384,30 @@ function endGame()
 }
 
 function leave_game() {
-	// TO-DO: If User click Leave Game button, make them loose and win the opponent. Do not forget to do socket.emit('delete_room')
+	// TO-DO: If User click Leave Game button, make them lose and win the opponent. Do not forget to do socket.emit('delete_room')
+	console.log('button clicked');
+	if(pid == 'player1')
+	{
+		var winner = {
+			'winner':config.player2,
+			'loser':config.player1,
+			'game':game,
+			'name':'player2',
+			'rid':rid
+		};
+	}
+	else
+	{
+		var winner = {
+			'winner':config.player2,
+			'loser':config.player1,
+			'game':game,
+			'name':'player2',
+			'rid':rid
+		};
+	}
+	socket.emit('leaveGame',winner);
+	location.href = '/';
 }
 
 
