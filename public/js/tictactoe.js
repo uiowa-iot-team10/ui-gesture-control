@@ -144,11 +144,13 @@ socket.on('move',(data)=>
 			{
 				rows[data.row][data.col].className += " oh";
 				rows_tracker[data.row][data.col] = 2;
+				totalMoves += 1;
 			}
 			else
 			{
 				rows[data.row][data.col].className += " ex";
 				rows_tracker[data.row][data.col] = 1;
+				totalMoves += 1;
 			}
 			row_index = data.row;
 			col_index = data.col;
@@ -170,7 +172,9 @@ function checkForVictory()
 
 	if (totalMoves > 8)
 	{
-		document.getElementById("announcementText").innerHTML = "It's a DRAW!";
+		//document.getElementById("announcementText").innerHTML = "It's a DRAW!";
+		printWin("DRAW");
+		return true;
 	}
 
 	// check vertical win
@@ -235,7 +239,6 @@ function checkBox(playerNum, row, col)
 
 function printWin(playerNum)
 {
-	document.getElementById("announcementText").innerHTML = playerNum + " WINS!";
 	if(playerNum == 'player1')
 	{
 		var winner = {
@@ -243,20 +246,34 @@ function printWin(playerNum)
 			'loser': config.player2,
 			'game': game,
 			'name': 'player1',
-			'rid': rid
+			'rid': rid,
+			'draw': false
 		};
 		socket.emit('playerWin',winner);
 	}
-	else
+	else if(playerNum == 'player2')
 	{
 		var winner = {
 			'winner': config.player2,
 			'loser': config.player1,
 			'game': game,
 			'name': 'player2',
-			'rid': rid
+			'rid': rid,
+			'draw': false
 		};
 		socket.emit('playerWin',winner);
+	}
+	else
+	{
+		var draw = {
+			'player1':config.player1,
+			'player2':config.player2,
+			'game':game,
+			'name':'draw',
+			'rid':rid,
+			'draw':true
+		};
+		socket.emit('playerWin',draw);
 	}
 }
 
@@ -264,6 +281,11 @@ socket.on('printWinner',(data) => {
 	if(data.name == pid)
 	{
 		document.getElementById("announcementText").innerHTML = "You WON!";
+		endGame();
+	}
+	else if(data.name == 'draw')
+	{
+		document.getElementById("announcementText").innerHTML = "It's a DRAW!"
 		endGame();
 	}
 	else

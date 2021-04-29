@@ -246,37 +246,54 @@ io_client.on('connection', function(socket){
     socket.on('playerWin',(data) => {
         console.log("PLAYER WON: ");
         console.log(data);
-        rdb.database.ref(util.format("users/%s", data.winner.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
+        if(!data.draw)
         {
-            if(data.game == 'connect4')
+            rdb.database.ref(util.format("users/%s", data.winner.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
-                rdb.database.ref(util.format("users/%s/Connect4Wins",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().Connect4Wins + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesWon",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesWon + 1);
-            }
-            else if(data.game == 'tic-tac-toe')
+                if(data.game == 'connect4')
+                {
+                    rdb.database.ref(util.format("users/%s/Connect4Wins",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().Connect4Wins + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesWon",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesWon + 1);
+                }
+                else if(data.game == 'tic-tac-toe')
+                {
+                    rdb.database.ref(util.format("users/%s/TicTacToeWins",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TicTacToeWins + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesWon",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesWon + 1);
+                }
+            });
+            rdb.database.ref(util.format("users/%s", data.loser.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
-                rdb.database.ref(util.format("users/%s/TicTacToeWins",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TicTacToeWins + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesWon",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesWon + 1);
-            }
-        });
-        rdb.database.ref(util.format("users/%s", data.loser.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
+                if(data.game == 'connect4')
+                {
+                    rdb.database.ref(util.format("users/%s/Connect4Losses",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().Connect4Losses + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
+                }
+                else if(data.game == 'tic-tac-toe')
+                {
+                    rdb.database.ref(util.format("users/%s/TicTacToeLosses",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TicTacToeLosses + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+                    rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
+                }
+            });
+            rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
+        }
+        else
         {
-            if(data.game == 'connect4')
+            rdb.database.ref(util.format("users/%s", data.player1.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
-                rdb.database.ref(util.format("users/%s/Connect4Losses",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().Connect4Losses + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
-            }
-            else if(data.game == 'tic-tac-toe')
+                rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.player1.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+            });
+
+            rdb.database.ref(util.format("users/%s", data.player2.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
-                rdb.database.ref(util.format("users/%s/TicTacToeLosses",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TicTacToeLosses + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
-                rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
-            }
-        });
-        rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
+                rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.player2.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+            });
+            rdb.database.ref(util.format('rooms/%s/winner',data.rid)).set(data.name);
+        }
+       
     });
 
     socket.on('disconnect', (data) => {
