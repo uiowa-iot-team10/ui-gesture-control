@@ -27,12 +27,4 @@ function sign_out() {
 function make_visible() {
 	$("#content").removeAttr('hidden');
 	document.onkeydown = interpKeydown;
-	// game_array = document.getElementById("game-nav").children;
-	// for (i = 0; i < game_array.length; i++)
-	// {
-	//   game_array[i].setAttribute('tabindex', '0');
-	// }
-	// var index = 0;
-	// focus;
-	// game_array[index].focus();
 }

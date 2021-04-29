@@ -61,18 +61,9 @@ function create_room() {
 var socket = io();
 
 socket.on('connection', function(data){
-    // var status = document.getElementById("status");
-    // status.setAttribute("class", "connected");
-    // status.innerHTML = "Server: Connected!";
     var rooms = document.querySelector("#rooms tbody");
     removeAllChildNodes(rooms);
     socket.emit("get_active_rooms", null);
-});
-
-socket.on('disconnect', function(data){
-    // var status = document.getElementById("status");
-    // status.setAttribute("class", "notconnected");
-    // status.innerHTML = "Server: Not Connected!";
 });
 
 socket.on('gesture', function(data){
@@ -123,11 +114,9 @@ socket.on('active_rooms', (data) => {
     }
 });
 
-// refreshes page every 30 seconds
-// setTimeout(() => 
-// {
-//     if(!($('#myModal').is(':visible')))
-//     {
-//         location.reload()
-//     }
-// },10000);
+
+// refreshes active room list every 3 seconds
+setInterval( () => 
+{
+    socket.emit("get_active_rooms", null);
+},3000);
