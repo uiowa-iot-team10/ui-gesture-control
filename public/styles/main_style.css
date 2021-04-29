@@ -42,6 +42,7 @@ a {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 #header{
     display: flex;
@@ -194,10 +195,10 @@ a {
     border: 0.75rem solid orangered;
 }
 #c4Box .p1{
-    background-image: url(https://upload.wikimedia.org/wikipedia/commons/8/8e/Pan_Blue_Circle.png);
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Light_Blue_Circle.svg/1200px-Light_Blue_Circle.svg.png);
 }
 #c4Box .p2{
-    background-image: url(https://upload.wikimedia.org/wikipedia/commons/f/f1/Ski_trail_rating_symbol_red_circle.png);
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Red_Circle%28small%29.svg/1200px-Red_Circle%28small%29.svg.png);
 }
 
 #c4Announcement{
@@ -208,6 +209,20 @@ a {
     color: white;
     font-size: 3rem;
 }
+
+#diffChoices{
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+}
+#diffChoices .diffButton{
+    margin-bottom: 5%;
+}
+#pyd{
+    color: white;
+    font-size: 3rem;
+}
+
 
 #connect_section{
     color: white;

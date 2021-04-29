@@ -122,3 +122,12 @@ socket.on('active_rooms', (data) => {
         }
     }
 });
+
+// refreshes page every 30 seconds
+setTimeout(() => 
+{
+    if(!($('#myModal').is(':visible')))
+    {
+        location.reload()
+    }
+},10000);

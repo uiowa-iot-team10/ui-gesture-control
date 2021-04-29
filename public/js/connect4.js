@@ -1,12 +1,10 @@
-const rid  = sessionStorage.getItem("rid");
-const pid  = sessionStorage.getItem("pid");
-const game = sessionStorage.getItem("game");
-
 var player = 1;
 var totalMoves = 0;
 var player = 0;
 var player_turn = 0;
 var rtrnStr;
+
+var difficulty;
 
 // If playing against AI
 if (true)
@@ -15,12 +13,6 @@ if (true)
 	player_turn = 1;
 	rtrnStr = "";
 }
-else // else playing against another player
-{
-	player_turn = 1;
-	player = 0; // get from firebase?
-}
-
 
 document.onkeydown = interpKeydown;
 
@@ -105,22 +97,23 @@ function setNewFocus(direction)
 		{
 			rows[row_index][col_index].className += " p1";
 			rows_tracker[row_index][col_index] = 1;
-			player_turn = 2;
 		}
 		else
 		{
 			rows[row_index][col_index].className += " p2";
 			rows_tracker[row_index][col_index] = 2;
-			player_turn = 1;
 		}
 
 		totalMoves += 1;
 
 		// if no victory on board, end players turn
-		if(!checkForVictory())
+		if(!checkForVictory(row_index, col_index))
 		{
 			endTurn();
 		}
+
+		if (player_turn == 1) { player_turn = 2; }
+		else if (player_turn == 2) { player_turn = 1; }
 
 		// row_index back to 0 since you drop from the top in connect 4
 		row_index = 0;
@@ -129,118 +122,62 @@ function setNewFocus(direction)
 	rows[row_index][col_index].focus();
 }
 
-function checkForVictory()
+function checkForVictory(current_row, current_col)
 {
 	var inARow = 0;
 
-	if (totalMoves > 41)
+	// check horizontal win
+	for (i = 0; i < 7; i++)
 	{
-		document.getElementById("announcementText").innerHTML = "It's a DRAW!";
+		if (checkBox(player_turn, current_row, i)) { inARow += 1; }
+		else { inARow = 0; }
+		if (inARow >= 4) { printWin(player);return true; }
 	}
+	inARow = 0;
 
 	// check vertical win
 	for (i = 0; i < 6; i++)
 	{
-		if (checkBox(player, i, col_index))
-		{
-			inARow += 1;
-		}
-		else{inARow = 0;}
-
-		if (inARow >= 4){printWin(player);return true;}
+		if (checkBox(player_turn, i, current_col)) { inARow += 1; }
+		else { inARow = 0; }
+		if (inARow >= 4) { printWin(player);return true; }
 	}
 	inARow = 0;
 
-	// check horizontal win
-    for (i = 0; i < 7; i++)
+	// check diagonal win
+	var row_start = 0;
+	var col_start = 0;
+	if (current_row >= current_col){ row_start = current_row - current_col; }
+	else { col_start = current_col - current_row; }
+	for (i = 0; i < 6; i++)
 	{
-		if (checkBox(player, row_index, i))
-		{
-			inARow += 1;
-		}
-		else{inARow = 0;}
-
-		if (inARow >= 4){printWin(player);return true;}
+		if (checkBox(player_turn, row_start + i, col_start + i)) { inARow += 1; }
+		else { inARow = 0; }
+		if (inARow >= 4) { printWin(player);return true; }
+		if (row_start + i >= 5 || col_start + i >= 6) { break; }
 	}
 	inARow = 0;
-	
-	// check diag win vertical, starting at first row first column
-	for (i = 0; i < 3; i++)
+
+	// check anti-diagonal win
+	var row_start = 0;
+	var col_start = 6;
+	if (current_row + current_col == 6){ row_start = 0; } // on far right
+	else if (current_row + current_col > 6) { row_start = current_row + current_col - 6; }
+	else { col_start = current_col + current_row; } // on top
+	for (i = 0; i < 6; i++)
 	{
-		// start with row 3 col 1 where you index both row/col up every time
-		//		index row down, index row down
-		// row 3 col 1, row 4 col 2, row 5 col 3, ...
-		// row 2 col 1, row 3 col 2, row 4 col 3, ...
-		// row 1 col 1, row 2 col 2, row 3 col 3, ...
-		for (j = 0; i + j < 6; j++)
-		{
-			if (checkBox(player, i + j, j))
-			{
-				inARow += 1;
-			}
-			else{inARow = 0;}
-			if (inARow >= 4){printWin(player);return true;}
-		}
+		if (checkBox(player_turn, row_start + i, col_start - i)) { inARow += 1; }
+		else { inARow = 0; }
+		if (inARow >= 4) { printWin(player);return true; }
+		if (row_start + i >= 5 || col_start - i <= 0) { break; }
 	}
 	inARow = 0;
 
-	
-	// check diag win horizontal, starting first row, second column
-	for (i = 1; i < 4; i++)
+	if (totalMoves > 41)
 	{
-		// start with row 1 col 2 where you index both row/col up every time
-		//		index col up, index col up
-		// row 1 col 2, row 2 col 3, ...
-		// row 1 col 3, row 2 col 4, ...
-		// ...
-		// row 1 col 5, row 2 col 6, ...
-		for (j = 0; j < 6; j++)
-		{
-			if (i + j > 6){continue;} // if you hit the far right edge
-
-			if (checkBox(player, j, i + j))
-			{
-				inARow += 1;
-			}
-			else{inARow = 0;}
-			if (inARow >= 4){printWin(player);return true;}
-		}
+		document.getElementById("announcementText").innerHTML = "It's a DRAW!";
+		endGame();
 	}
-	inARow = 0;
-	
-
-	// check anti-diag win vertical, starting at first row first column
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; i + j < 6; j++)
-		{
-			if (checkBox(player, i + j, 6 - j))
-			{
-				inARow += 1;
-			}
-			else{inARow = 0;}
-			if (inARow >= 4){printWin(player);return true;}
-		}
-	}
-	inARow = 0;
-
-	
-	// check anti-diag win horizontal, starting first row, second column
-	for (i = 1; i < 4; i++)
-	{
-		for (j = 0; j < 6; j++)
-		{
-			if (i + j > 6){continue;} // if you hit the far left edge
-
-			if (checkBox(player, j, 6 - (i + j)))
-			{
-				inARow += 1;
-			}
-			else{inARow = 0;}
-			if (inARow >= 4){printWin(player);return true;}
-		}
-	}
-	inARow = 0;
 
 	return false;
 }
@@ -267,7 +204,7 @@ function printWin(playerNum)
 function endTurn()
 {
 	// send array to AI, wait until player turn
-	if (true && player == 1) // If its PvE
+	if (player == 1) // If its PvE
 	{
 		// string to be sent to AI
 		var sendStr = "";
@@ -289,17 +226,14 @@ function endTurn()
 		}
 
 		socket.emit("aiQuery", sendStr);
+	}
 
-	}
-	else // If its PvP
-	{
-		//
-	}
 }
 
 function endGame()
 {
 	player_turn = 0; // stops any input
+	//window.location.href = "../"; // send user back to homepage
 }
 
 
@@ -312,11 +246,22 @@ socket.on('gesture', function(data){
 
 socket.on('aiReturn', function(data){
 	rtrnStr = data;
-	document.getElementById("announcementText").innerHTML = rtrnStr;
-
 	// Change player to 2 (AI) set chip, change player back to 1
 	player = 2;
 	col_index = parseInt(rtrnStr);
 	setNewFocus('INPUT');
 	player = 1;
 });
+
+
+document.getElementById("c4Box").style.display = "none";
+document.getElementById("c4Announcement").style.display = "none";
+
+function diffSelected(diff)
+{
+	difficulty = diff;
+	socket.emit("setDifficulty", difficulty);
+	document.getElementById("diffChoices").style.display = "none";
+	document.getElementById("c4Box").style.display = "initial";
+	document.getElementById("c4Announcement").style.display = "initial";
+}

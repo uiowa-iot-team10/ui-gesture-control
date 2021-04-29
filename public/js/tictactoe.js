@@ -1,7 +1,3 @@
-const rid  = sessionStorage.getItem("rid");
-const pid  = sessionStorage.getItem("pid");
-const game = sessionStorage.getItem("game");
-
 var player = 1;
 var totalMoves = 0;
 
@@ -52,23 +48,13 @@ function interpKeydown(e)
 	{
 		setNewFocus('INPUT');
 	}
-
-	// TODO: REMOVE THIS, THIS IS ONLY TO TEST CHANGIN PLAYERS
-	else if (e.keyCode == '49') // else if enter key, press down
-	{
-		player = 1;
-	}
-	else if (e.keyCode == '50') // else if enter key, press down
-	{
-		player = 2;
-	}
 }
 
 function setNewFocus(direction)
 {
 	if (direction == 'RIGHT')
 	{
-		if (col_index < rows[row_index].length - 1)
+		if (col_index < rows_tracker[row_index].length - 1)
 		{
 			col_index += 1;
 		}
@@ -89,7 +75,7 @@ function setNewFocus(direction)
 	}
 	else if (direction == 'DOWN')
 	{
-		if (row_index < rows.length - 1)
+		if (row_index < rows_tracker.length - 1)
 		{
 			row_index += 1;
 		}
@@ -98,65 +84,59 @@ function setNewFocus(direction)
 	{
 		if (rows_tracker[row_index][col_index] != 0)
 		{
-			document.getElementById("debug1").innerHTML = "Put Neither";
 			return; // if there is already an X or O there don't let a new one get put down
 		}
 		else if (player == 1)
 		{
 			rows[row_index][col_index].className += " ex";
-			document.getElementById("debug1").innerHTML = "Put X";
 			rows_tracker[row_index][col_index] = 1;
 		}
 		else
 		{
 			rows[row_index][col_index].className += " oh";
-			document.getElementById("debug1").innerHTML = "Put O";
 			rows_tracker[row_index][col_index] = 2;
 		}
 
 		totalMoves += 1;
 
 		// check for victory on board
-		checkForVictory();
+		if (!checkForVictory(row_index, col_index))
+		{
+			// end players turn
+			endTurn();
+		}
+		else{ endGame(); }
 		
-		// end players turn
-		// endTurn();
+		
 	}
 
 	rows[row_index][col_index].focus();
 }
 
-function checkForVictory()
+function checkForVictory(current_row, current_col)
 {
 	var inARow = 0;
-
-	document.getElementById("debug2").innerHTML = totalMoves;
-
-	if (totalMoves > 8)
-	{
-		document.getElementById("announcementText").innerHTML = "It's a DRAW!";
-	}
 
 	// check vertical win
 	for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, i, col_index))
+		if (checkBox(player, i, current_col))
 		{
 			inARow += 1;
 		}
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(player);return true;}
 	else {inARow = 0;}
 
 	// check horizontal win
     for (i = 0; i < 3; i++)
 	{
-		if (checkBox(player, row_index, i))
+		if (checkBox(player, current_row, i))
 		{
 			inARow += 1;
 		}
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(player);return true;}
 	else {inARow = 0;}
 	
 	// check diag win
@@ -167,7 +147,7 @@ function checkForVictory()
 			inARow += 1;
 		}
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(player);return true;}
 	else {inARow = 0;}
 
 	// check opposite diag win
@@ -180,8 +160,13 @@ function checkForVictory()
 		}
 		j--;
 	}
-	if (inARow == 3){printWin(player);}
+	if (inARow == 3){printWin(player);return true;}
 	else {inARow = 0;}
+
+	if (totalMoves > 8)
+	{
+		document.getElementById("announcementText").innerHTML = "It's a DRAW!";
+	}
 }
 
 function checkBox(playerNum, row, col)
@@ -205,28 +190,63 @@ function printWin(playerNum)
 
 function endTurn()
 {
-	// send array to AI or Firebase and wait until it's your turn again
+	// send array to AI, wait until player turn
+	if (player == 1)
+	{
+		// string to be sent to AI
+		var sendStr = "";
+
+		// For each row, loop through each col
+		for (i = 0; i < rows_tracker.length; i++)
+		{
+			for (j = 0; j < rows_tracker[i].length; j++)
+			{
+				// save chip to string w/ a ',' in between
+				if (rows_tracker[i][j] == 1){sendStr = sendStr.concat("1");}
+				else if (rows_tracker[i][j] == 2){sendStr = sendStr.concat("-1");}
+				else{sendStr = sendStr.concat("0");}
+
+				if (j < rows_tracker[i].length - 1){sendStr = sendStr.concat(",");}
+			}
+			// concat a ',' after each row
+			if (i < rows_tracker.length - 1){sendStr = sendStr.concat(",");}
+		}
+
+		socket.emit("aiQuery_ttt", sendStr);
+	}
 }
 
 function endGame()
 {
-	// send player back to homepage?
+	// set player to 0 to prevent further moves
+	player = 0;
 }
 
 var socket = io.connect();
-// socket.on('connection', function(data){
-//     var status = document.getElementById("status");
-//     status.setAttribute("class", "connected");
-//     status.innerHTML = "Server: Connected!";
-// });
-
-// socket.on('disconnect', function(data){
-//     var status = document.getElementById("status");
-//     status.setAttribute("class", "notconnected");
-//     status.innerHTML = "Server: Not Connected!";
-// });
 
 socket.on('gesture', function(data){
 	console.log(data);
 	setNewFocus(data);
 });
+
+socket.on('aiReturn_ttt', function(data){
+	rtrnStr = data.toString();
+	// Change player to 2 (AI) set chip, change player back to 1
+	player = 2;
+	row_index = Math.trunc(parseInt(rtrnStr)/3);
+	col_index = parseInt(rtrnStr)%3;
+	setNewFocus('INPUT');
+	player = 1;
+});
+
+document.getElementById("ticTacToeBox").style.display = "none";
+document.getElementById("ticTacToeAnnouncement").style.display = "none";
+
+function diffSelected(diff)
+{
+	difficulty = diff;
+	socket.emit("setDifficulty_ttt", difficulty);
+	document.getElementById("diffChoices").style.display = "none";
+	document.getElementById("ticTacToeBox").style.display = "initial";
+	document.getElementById("ticTacToeAnnouncement").style.display = "initial";
+}

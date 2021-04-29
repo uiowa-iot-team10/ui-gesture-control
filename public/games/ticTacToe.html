@@ -4,6 +4,10 @@
     <title>IoT Team 10</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/public/styles/main_style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+    <script src="/public/js/firebase-init.js"></script>
   </head>
   <body>
     <div id = "screen">
@@ -17,6 +21,14 @@
           </span>
         </section>
       </header>
+      <div id="diffChoices">
+        <p id="pyd">Pick Your Difficulty</p>
+        <button id="connect_button" class="diffButton" onclick="diffSelected('dummy')">Infant</button>
+        <button id="connect_button" class="diffButton" onclick="diffSelected('easy')">Easy</button>
+        <button id="connect_button" class="diffButton" onclick="diffSelected('medium')">Medium</button>
+        <button id="connect_button" class="diffButton" onclick="diffSelected('hard')">Hard</button>
+        <button id="connect_button" class="diffButton" onclick="diffSelected('expert')">4D Chess</button>
+      </div>
       <div id="ticTacToeBox">
         <div id = "row1" class="row">
             <div id = "r1c1" class = "game"></div>

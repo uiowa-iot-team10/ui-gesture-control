@@ -29,6 +29,9 @@ const MOVEMENT_CHARACTERISTIC_UUID = '19B10012-E8F2-537E-4F6C-D104768A1214';
 var device_list = [];
 var MAC_LIST = [];
 
+var difficulty;
+var difficulty_ttt;
+
 // To make other files accessible
 app.use(express.static(__dirname));
 
@@ -200,7 +203,21 @@ io_client.on('connection', function(socket){
     socket.on('aiQuery', function(data){
         queryAI(data.toString());
     });
+    // function to query child process in an AI game of tictactoe or connect4
+    socket.on('aiQuery_ttt', function(data){
+        queryAI_ttt(data.toString());
+    });
 
+    // function to establish game difficulty picked by user (C4)
+    socket.on('setDifficulty', function(data){
+        difficulty = data.toString();
+        console.log("[LOG] - Set AI to " + difficulty);
+    });
+    // function to establish game difficulty picked by user (TTT)
+    socket.on('setDifficulty_ttt', function(data){
+        difficulty_ttt = data.toString();
+        console.log("[LOG] - Set AI_ttt to " + difficulty_ttt);
+    });
     
 });
 
@@ -279,10 +296,25 @@ function queryAI(qData) {
 
     // send the string to AI by just calling the python script with the current game state and getting the AI's response
     var spawn = require("child_process").spawn;
-    var process = spawn('python3',["./inference.py", qData] );
+    var process = spawn('python3',["./inference.py", qData, difficulty] );
 
     process.stdout.on('data', function(data) {
         rtrnStr = data.toString();
         io_client.sockets.emit("aiReturn", rtrnStr);
     });
+}
+function queryAI_ttt(qData) {
+
+    // string to be returned
+    var rtrnStr = "";
+
+    // send the string to AI by just calling the python script with the current game state and getting the AI's response
+    var spawn = require("child_process").spawn;
+    var process = spawn( 'python3',["./tictactoe.py", qData, difficulty_ttt] );
+
+    process.stdout.on('data', function(data) {
+        rtrnStr = data.toString();
+        io_client.sockets.emit("aiReturn_ttt", rtrnStr);
+    });
+
 }

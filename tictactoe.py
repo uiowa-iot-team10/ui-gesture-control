@@ -3,34 +3,35 @@ import numpy as np
 import sys
 
 def state_to_tensor(state, move):
-    vec = np.zeros((1,7), dtype=np.float32)
+    vec = np.zeros(9, dtype=np.float32)
     if move != -1:
-        vec[0, move] = 1
-        tensor = np.append(vec, state, axis=0)
-        tensor = tensor.reshape((1,7,7,1))
-        return tensor
+        vec[move] = 1
+    tensor = np.array((vec, state))
+    tensor = tensor.reshape((1,2,9))
+    return tensor
 
 def available_moves(state):
-    avaiable_move_list = []
-    for i in range(7):
-        if state[0][i] == 0:
-            avaiable_move_list.append(i)
-    return avaiable_move_list
+    available_moves = []
+    for index, value in enumerate(state):
+        if '0' in value:
+            available_moves.append(index)
+    # moves = [s for s, v in enumerate(np.nditer(state)) if v == 0]
+    return available_moves
 
 m_path = ""
 difficulty = sys.argv[2]
 if 'dummy' in difficulty:
-    m_path = 'AI/model_values_connect_four__second_0_dummy.tflite'
+    m_path = 'AI/model_values_tic_tac_toe__second_0.tflite'
 elif 'easy' in difficulty:
-    m_path = 'AI/model_values_connect_four__second_49_easy.tflite'
+    m_path = 'AI/model_values_tic_tac_toe__second_24.tflite'
 elif 'medium' in difficulty:
-    m_path = 'AI/model_values_connect_four__second_99_medium.tflite'
+    m_path = 'AI/model_values_tic_tac_toe__second_49.tflite'
 elif 'hard' in difficulty:
-    m_path = 'AI/model_values_connect_four__second_149_hard.tflite'
+    m_path = 'AI/model_values_tic_tac_toe__second_74.tflite'
 elif 'expert' in difficulty:
-    m_path = 'AI/model_values_connect_four__second_199_expert.tflite'
+    m_path = 'AI/model_values_tic_tac_toe__second_99.tflite'
 else:
-     m_path = 'AI/model_values_connect_four__second_199_expert.tflite'
+     m_path = 'AI/model_values_tic_tac_toe__second_99.tflite'
 
 interpreter = tflite.Interpreter(model_path=m_path)
 interpreter.allocate_tensors()
@@ -40,21 +41,23 @@ output_details = interpreter.get_output_details()
 
 floating_model = input_details[0]['dtype'] == np.float32
 
-state = np.zeros((6,7), dtype=np.float32)
-#state[0][0] = float(1)
+# What does this state look like?
+state = np.zeros((9), dtype=np.float32)
 
 data = sys.argv[1]
-data_split = data.split('.')
-data_split = [i.split(',') for i in data_split]
-for r_ctr, row in enumerate(data_split):
-    for c_ctr, value in enumerate(row):
-        state[r_ctr][c_ctr] = float(value)
+data = data.split(',')
+for index, value in enumerate(data):
+    if '1' in value:
+        state[index] = float(1.0)
+    elif '-1' in value:
+        state[index] = float(-1.0)
 
 # Loop through each possible move and decide what's best
 best_move = -1
 best_value = -1
+
 # Loop only through legal moves
-for move in available_moves(state):
+for move in available_moves(data):
     input_data = state_to_tensor(state, move)
     interpreter.set_tensor(input_details[0]['index'], input_data)
 

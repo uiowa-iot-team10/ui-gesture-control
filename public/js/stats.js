@@ -71,10 +71,14 @@ socket.on('send_user_game_data', (data) =>
 
 function calculateRating(win,loss)
 {
-    var rating = (win*30)-(loss*10);
+    var rating = 500 + ((win*30)-(loss*10));
     if(rating < 500)
     {
         rating = 500;
+    }
+    if(rating > 10000)
+    {
+        rating = 10000
     }
     return rating;
 }
