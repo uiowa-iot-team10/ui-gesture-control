@@ -1,30 +1,9 @@
-firebase.auth().onAuthStateChanged(function(user) {
-	if (user == null) {
-		window.location.replace("/login");
-	} else if (user && !user.emailVerified) {
-		// TO-DO: Put an alert to inform user to verify their account
-		window.confirm("VERIFY YOUR EMAIL!!!!");
-		sign_out();
-		window.location.replace("/login");
-	}
-	else {
-		$("#welcome_message").text(user.displayName);
-		make_visible();
-	}
-});
-
-function make_visible() {
-	$("#content").removeAttr('hidden');
-	document.onkeydown = interpKeydown;
-}
-
 const rid  = sessionStorage.getItem("rid");
 const pid  = sessionStorage.getItem("pid");
 const game = sessionStorage.getItem("game");
 
-console.log("RID: " + rid.toString());
-console.log("PID: " + pid.toString());
-console.log("Game: " + game.toString());
+var config = {};
+var timercount = 10;
 
 var socket = io.connect();
 
@@ -38,6 +17,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 		window.location.replace("/login");
 	}
 	else {
+		$("#welcome_message").text(user.displayName);
 		socket.emit('getPlayerList',{'rid': rid, 'game': game});
 	}
 });
@@ -49,8 +29,6 @@ socket.emit(pid + "_ready2play", {
 var totalMoves = 0;
 var player = 1;
 var playerTurn = 'player1';
-
-var AI = false;
 
 document.onkeydown = interpKeydown;
 
@@ -315,7 +293,6 @@ function checkBox(playerNum, row, col)
 
 function printWin(playerNum)
 {
-	document.getElementById("announcementText").innerHTML = playerNum + " WINS!";
 	if(playerNum == 'player1')
 	{
 		var winner = {
@@ -374,18 +351,20 @@ function endGame()
 {
 	$('#staticBackdrop').modal('toggle');
 	socket.emit('delete_room',{'rid':rid});
-	sessionStorage.removeItem("rid");
-	sessionStorage.removeItem("pid");
-	sessionStorage.removeItem("game");
 	setTimeout(function()
 	{
+		sessionStorage.removeItem("rid");
+		sessionStorage.removeItem("pid");
+		sessionStorage.removeItem("game");
 		location.href = '/';
 	},10000);
+	setInterval(function () {
+		timercount--;
+		document.getElementById("modal-result-message").innerHTML = "You will be redirected to main page in " + timercount + " seconds.";
+	}, 1000);
 }
 
 function leave_game() {
-	// TO-DO: If User click Leave Game button, make them lose and win the opponent. Do not forget to do socket.emit('delete_room')
-	console.log('button clicked');
 	if(pid == 'player1')
 	{
 		var winner = {
@@ -407,12 +386,14 @@ function leave_game() {
 		};
 	}
 	socket.emit('leaveGame',winner);
+	sessionStorage.removeItem("rid");
+	sessionStorage.removeItem("pid");
+	sessionStorage.removeItem("game");
 	location.href = '/';
 }
 
 
 socket.on('gesture', function(data){
-	console.log(data);
 	setNewFocus(data);
 });
 

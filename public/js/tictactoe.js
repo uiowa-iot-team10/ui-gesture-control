@@ -2,6 +2,9 @@ const rid  = sessionStorage.getItem("rid");
 const pid  = sessionStorage.getItem("pid");
 const game = sessionStorage.getItem("game");
 
+var config = {};
+var timercount = 10;
+
 var socket = io.connect();
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -14,6 +17,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 		window.location.replace("/login");
 	}
 	else {
+		$("#welcome_message").text(user.displayName);
 		socket.emit('getPlayerList',{'rid': rid, 'game': game});
 	}
 });
@@ -111,19 +115,16 @@ function setNewFocus(direction)
 	{
 		if (rows_tracker[row_index][col_index] != 0)
 		{
-			document.getElementById("debug1").innerHTML = "Put Neither";
 			return; // if there is already an X or O there don't let a new one get put down
 		}
 		if (playerTurn == 'player1')
 		{
 			rows[row_index][col_index].className += " ex";
-			//document.getElementById("debug1").innerHTML = "Put X";
 			rows_tracker[row_index][col_index] = 1;
 		}
 		else
 		{
 			rows[row_index][col_index].className += " oh";
-			//document.getElementById("debug1").innerHTML = "Put O";
 			rows_tracker[row_index][col_index] = 2;
 		}
 		console.log('row:' + row_index + " col: " + col_index);
@@ -167,8 +168,6 @@ socket.on('move',(data)=>
 function checkForVictory()
 {
 	var inARow = 0;
-
-	//document.getElementById("debug2").innerHTML = totalMoves;
 
 	if (totalMoves > 8)
 	{
@@ -297,8 +296,8 @@ socket.on('printWinner',(data) => {
 
 function endGame()
 {
+	$('#staticBackdrop').modal('toggle');
 	socket.emit('delete_room',{'rid':rid});
-
 	setTimeout(function()
 	{
 		sessionStorage.removeItem("rid");
@@ -306,11 +305,42 @@ function endGame()
 		sessionStorage.removeItem("game");
 		location.href = '/';
 	},10000);
+	setInterval(function () {
+		timercount--;
+		document.getElementById("modal-result-message").innerHTML = "You will be redirected to main page in " + timercount + " seconds.";
+	}, 1000);
+}
+
+function leave_game() {
+	if(pid == 'player1')
+	{
+		var winner = {
+			'winner':config.player2,
+			'loser':config.player1,
+			'game':game,
+			'name':'player2',
+			'rid':rid
+		};
+	}
+	else
+	{
+		var winner = {
+			'winner':config.player2,
+			'loser':config.player1,
+			'game':game,
+			'name':'player2',
+			'rid':rid
+		};
+	}
+	socket.emit('leaveGame',winner);
+	sessionStorage.removeItem("rid");
+	sessionStorage.removeItem("pid");
+	sessionStorage.removeItem("game");
+	location.href = '/';
 }
 
 
 socket.on('gesture', function(data){
-	console.log(data);
 	setNewFocus(data);
 });
 
