@@ -56,11 +56,11 @@ app.get('/signup', (req, res) => {
 });
 
 app.get('/tic-tac-toe', (req, res) => {
-    res.sendFile(__dirname + '/public/games/ticTacToe.html');
+    res.sendFile(__dirname + '/public/games/ticTacToe_AI.html');
 });
 
 app.get('/connect4', (req, res) => {
-    res.sendFile(__dirname + '/public/games/connect4.html');
+    res.sendFile(__dirname + '/public/games/connect4_AI.html');
 });
 
 app.get('/waiting_room', (req, res) => {
