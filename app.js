@@ -242,7 +242,6 @@ io_client.on('connection', function(socket){
         });
     });
 
-    //Connect4Losses , Connect4Wins, TotalGamesLost , TotalGamesPlayed , TotalGamesWon 
     socket.on('playerWin',(data) => {
         console.log("PLAYER WON: ");
         console.log(data);

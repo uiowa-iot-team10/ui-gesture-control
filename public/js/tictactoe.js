@@ -172,7 +172,6 @@ function checkForVictory()
 
 	if (totalMoves > 8)
 	{
-		//document.getElementById("announcementText").innerHTML = "It's a DRAW!";
 		printWin("DRAW");
 		return true;
 	}
