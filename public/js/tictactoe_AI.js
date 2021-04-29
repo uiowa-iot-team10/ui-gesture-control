@@ -218,8 +218,8 @@ function endTurn()
 
 function endGame()
 {
-	// set player to 0 to prevent further moves
-	player = 0;
+	player = 0; // set player to 0 to prevent further moves
+	setTimeout(function() { window.location.href = "../"; }, 5000); // send user back to homepage
 }
 
 var socket = io.connect();

@@ -28,9 +28,9 @@ elif 'medium' in difficulty:
 elif 'hard' in difficulty:
     m_path = 'AI/model_values_connect_four__second_149_hard.tflite'
 elif 'expert' in difficulty:
-    m_path = 'AI/model_values_connect_four__second_199_expert.tflite'
+    m_path = 'AI/model_values_connect_four__first_hard.tflite'
 else:
-     m_path = 'AI/model_values_connect_four__second_199_expert.tflite'
+     m_path = 'AI/model_values_connect_four__first_hard.tflite'
 
 interpreter = tflite.Interpreter(model_path=m_path)
 interpreter.allocate_tensors()

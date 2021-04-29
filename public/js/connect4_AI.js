@@ -233,7 +233,7 @@ function endTurn()
 function endGame()
 {
 	player_turn = 0; // stops any input
-	//window.location.href = "../"; // send user back to homepage
+	setTimeout(function() { window.location.href = "../"; }, 5000); // send user back to homepage
 }
 
 
