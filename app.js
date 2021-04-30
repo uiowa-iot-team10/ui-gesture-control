@@ -375,7 +375,7 @@ io_client.on('connection', function(socket){
                 }
             });
             rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
-            var status = util.format("%s ran away so %s won by default!", data.winnerName, data.loserName, data.game);
+            var status = util.format("%s ran away so %s won by default!", data.loserName, data.winnerName, data.game);
             var postBody = { 'status': status };
 
             oauth.post('https://api.twitter.com/1.1/statuses/update.json',
