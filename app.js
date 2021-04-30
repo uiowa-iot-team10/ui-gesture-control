@@ -201,6 +201,17 @@ io_client.on('connection', function(socket){
         });
     });
 
+    socket.on('disconnect', (data) => {
+        console.log("User has disconnected.");
+    });
+    socket.on('BLE',function(data)
+    {
+        if(!isConnected)
+        {
+            findDevices(socket);
+        }
+    });
+
     socket.on('moveCoord',(data) => {
         rdb.database.ref(util.format("rooms/%s/current_moves/%s", data.rid, data.player)).set({'row': data.row, 'col': data.col});
         rdb.database.ref(util.format("rooms/%s/moves", data.rid)).get().then((snapshot) => {
@@ -387,17 +398,6 @@ io_client.on('connection', function(socket){
                     }
                 });
             
-    });
-
-    socket.on('disconnect', (data) => {
-        console.log("User has disconnected.");
-    });
-    socket.on('BLE',function(data)
-    {
-        if(!isConnected)
-        {
-            findDevices(socket);
-        }
     });
 });
 
