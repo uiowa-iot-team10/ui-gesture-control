@@ -8,6 +8,23 @@ const { bluetooth, destroy } = createBluetooth();
 var rdb                      = require( './rdb' );
 var util                     = require('util');
 const { createHash, }        = require('crypto');
+var OAuth                    = require('oauth');
+
+const twitter_application_consumer_key = '5LZg3MVU4y8AFAv0JPEwDWA3R';
+const twitter_application_secret       = 'BgQgzOsIjEMSkvEKPnRVKlB5ZPUSJYw2xzMBvYZ78a0ztSE5rQ';
+const twitter_user_access_token        = '1375194195086950403-8KSqjFsxnZfGGuGgYd0QNNoZBCwAhC';
+const twitter_user_secret              = 'zveHec0vXOgvSJSHs9ZyyzJxcSRoQ1MiO68vio12edFGD';
+
+
+var oauth = new OAuth.OAuth(
+	'https://api.twitter.com/oauth/request_token',
+	'https://api.twitter.com/oauth/access_token',
+	twitter_application_consumer_key,
+	twitter_application_secret,
+	'1.0A',
+	null,
+	'HMAC-SHA1'
+);
 
 var CLIENT_PORT = process.env.PORT || 80;
 
@@ -278,6 +295,19 @@ io_client.on('connection', function(socket){
                 }
             });
             rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
+            var status = util.format("%s won against %s in %s!", data.winner, data.loser, data.game);
+            var postBody = { 'status': status };
+
+            oauth.post('https://api.twitter.com/1.1/statuses/update.json',
+                twitter_user_access_token,
+                twitter_user_secret,
+                postBody,
+                '',
+                function(err, data, res) {
+                    if (err) { console.log(err); }
+                    else { //console.log(data);
+                    }
+                });
         }
         else
         {
@@ -291,6 +321,19 @@ io_client.on('connection', function(socket){
                 rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.player2.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
             });
             rdb.database.ref(util.format('rooms/%s/winner',data.rid)).set(data.name);
+            var status = util.format("The match between %s and %s in %s ended in a draw!", data.winner, data.loser, data.game);
+            var postBody = { 'status': status };
+
+            oauth.post('https://api.twitter.com/1.1/statuses/update.json',
+                twitter_user_access_token,
+                twitter_user_secret,
+                postBody,
+                '',
+                function(err, data, res) {
+                    if (err) { console.log(err); }
+                    else { //console.log(data);
+                    }
+                });
         }
        
     });
@@ -328,6 +371,20 @@ io_client.on('connection', function(socket){
                 }
             });
             rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
+            var status = util.format("%s ran away so %s won by default!", data.winner, data.loser, data.game);
+            var postBody = { 'status': status };
+
+            oauth.post('https://api.twitter.com/1.1/statuses/update.json',
+                twitter_user_access_token,
+                twitter_user_secret,
+                postBody,
+                '',
+                function(err, data, res) {
+                    if (err) { console.log(err); }
+                    else { //console.log(data);
+                    }
+                });
+            
     });
 
     socket.on('disconnect', (data) => {
