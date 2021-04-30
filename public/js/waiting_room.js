@@ -2,20 +2,13 @@ const rid  = sessionStorage.getItem("rid");
 const pid  = sessionStorage.getItem("pid");
 const game = sessionStorage.getItem("game");
 
-console.log("RID: " + rid.toString());
-console.log("PID: " + pid.toString());
-console.log("Game: " + game.toString());
-
 var socket = io();
 
 firebase.auth().onAuthStateChanged(function(user) {
 	if (user == null) {
 		window.location.replace("/login");
 	} else if (user && !user.emailVerified) {
-		// TO-DO: Put an alert to inform user to verify their account
-		window.confirm("VERIFY YOUR EMAIL!!!!");
-		sign_out();
-		window.location.replace("/login");
+		$('#staticBackdrop').modal('toggle');
 	}
 	else {
         if (pid == "player2") {

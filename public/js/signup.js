@@ -11,7 +11,6 @@ function sign_up() {
 	var email    = document.getElementById("email").value;
 	var password = document.getElementById("password").value;
 	var passrep  = document.getElementById("passrepeat").value;
-	// var database = firebase.database();
 
 	firebase.auth().createUserWithEmailAndPassword(email, password)
 	.then((userCredential) => {
@@ -22,7 +21,6 @@ function sign_up() {
 			url: "http://raspberrypi.local"
 		};
 		user.sendEmailVerification().then(function() {
-			// console.log(email.replace(/[.#$\[\]]/g,'-'));
 			socket.emit("create_user_database", {
 				'email': email,
 				'name': name,
@@ -34,9 +32,7 @@ function sign_up() {
 				'TicTacToeWins': 0,
 				'TicTacToeLosses': 0
 			});
-			// TO-DO: Change this with a modal pop-up.
-			if (window.confirm("[SUCCESS] Please check your email for your account verification."))
-				window.location.assign("/");
+			$('#staticBackdrop').modal('toggle');
 		}).catch(function(error) {
 			$("#formAlert p").html("<strong>Error!</strong> " + error.message);
 			$("#formAlert").removeClass('d-none');
@@ -45,11 +41,19 @@ function sign_up() {
 	.catch((error) => {
 		var errorCode = error.code;
 		var errorMessage = error.message;
-		console.log("[ERROR (" + errorCode + ")] Could not sign up: " + errorMessage);
 		$("#formAlert p").html("<strong>Error!</strong> " + errorMessage);
 		$("#formAlert").removeClass('d-none');
 	});
 }
+
+function sign_out() {
+	firebase.auth().signOut().then(() => {
+		window.location.assign("/login");
+	}).catch((error) => {
+		alert("[ERROR] Could not sign out: " + error.message);
+	});
+}
+
 function ValidateEmail(email) 
 {
 	const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

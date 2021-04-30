@@ -1,6 +1,8 @@
 firebase.auth().onAuthStateChanged(function(user) {
 	if (user && user.emailVerified) {
 		window.location.replace("/");
+	} else if (user && !user.emailVerified) {
+		$('#staticBackdrop').modal('toggle');
 	} else {
 		$(".container").removeAttr('hidden');
 	}
@@ -22,10 +24,17 @@ function sign_in() {
 		var errorMessage = error.message;
 		$("#formAlert p").html("<strong>Error!</strong> " + errorMessage);
 		$("#formAlert").removeClass('d-none');
-		// console.log("[ERROR (" + errorCode + ")] Could not sign in: " + errorMessage);
-		// alert("[ERROR (" + errorCode + ")] Could not sign in: " + errorMessage);
 	});
 }
+
+function sign_out() {
+	firebase.auth().signOut().then(() => {
+		window.location.assign("/login");
+	}).catch((error) => {
+		alert("[ERROR] Could not sign out: " + error.message);
+	});
+}
+
 function ValidateEmail(email)
 {
 	const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

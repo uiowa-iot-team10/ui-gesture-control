@@ -2,10 +2,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 	if (user == null) {
 		window.location.replace("/login");
 	} else if (user && !user.emailVerified) {
-		// TO-DO: Put an alert to inform user to verify their account
-		window.confirm("VERIFY YOUR EMAIL!!!!");
-		sign_out();
-		window.location.replace("/login");
+		$('#staticBackdrop').modal('toggle');
 	}
 	else {
 		$("#welcome_message").text(user.displayName);
@@ -13,11 +10,18 @@ firebase.auth().onAuthStateChanged(function(user) {
 	}
 });
 
+function sign_out() {
+	firebase.auth().signOut().then(() => {
+		window.location.assign("/login");
+	}).catch((error) => {
+		alert("[ERROR] Could not sign out: " + error.message);
+	});
+}
+
 var socket = io.connect();
 
 function testFunction()
 {
-    // console.log("pressed button");
     socket.emit('BLE',true);
     var success = document.getElementById("device_connection_section");
     success.innerHTML = "Searching for the controller...";

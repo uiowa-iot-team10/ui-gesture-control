@@ -264,8 +264,6 @@ io_client.on('connection', function(socket){
     });
 
     socket.on('playerWin',(data) => {
-        console.log("PLAYER WON: ");
-        console.log(data);
         if(!data.draw)
         {
             rdb.database.ref(util.format("users/%s", data.winner.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
