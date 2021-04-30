@@ -54,7 +54,7 @@ for index, value in enumerate(data):
 
 # Loop through each possible move and decide what's best
 best_move = -1
-best_value = -1
+best_value = -999999
 
 # Loop only through legal moves
 for move in available_moves(data):
