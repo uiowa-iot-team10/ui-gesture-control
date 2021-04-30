@@ -25,6 +25,7 @@
   "dependencies": {
     "bluetooth-socket": "^0.1.2",
     "bluez": "^0.4.1",
+    "child_process": "^1.0.2",
     "crypto": "^1.0.1",
     "dbus": "^1.0.7",
     "errno": "^1.0.0",

@@ -73,8 +73,16 @@ app.get('/tic-tac-toe', (req, res) => {
     res.sendFile(__dirname + '/public/games/ticTacToe.html');
 });
 
+app.get('/tic-tac-toe-AI', (req, res) => {
+    res.sendFile(__dirname + '/public/games/ticTacToe_AI.html');
+});
+
 app.get('/connect4', (req, res) => {
     res.sendFile(__dirname + '/public/games/connect4.html');
+});
+
+app.get('/connect4-AI', (req, res) => {
+    res.sendFile(__dirname + '/public/games/connect4_AI.html');
 });
 
 app.get('/waiting_room', (req, res) => {
@@ -210,6 +218,26 @@ io_client.on('connection', function(socket){
         {
             findDevices(socket);
         }
+    });
+
+    // function to query child process in an AI game of tictactoe or connect4
+    socket.on('aiQuery', function(data){
+        queryAI(data.toString(), socket);
+    });
+    // function to query child process in an AI game of tictactoe or connect4
+    socket.on('aiQuery_ttt', function(data){
+        queryAI_ttt(data.toString(), socket);
+    });
+
+    // function to establish game difficulty picked by user (C4)
+    socket.on('setDifficulty', function(data){
+        difficulty = data.toString();
+        console.log("[LOG] - Set AI to " + difficulty);
+    });
+    // function to establish game difficulty picked by user (TTT)
+    socket.on('setDifficulty_ttt', function(data){
+        difficulty_ttt = data.toString();
+        console.log("[LOG] - Set AI_ttt to " + difficulty_ttt);
     });
 
     socket.on('moveCoord',(data) => {
@@ -464,10 +492,39 @@ async function setBLE(address, socket) {
     movementChar.on( 'valuechanged', buffer =>
     {
         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
-        io_client.sockets.emit("gesture",GESTURES[buffer[0]]);
+        socket.emit("gesture",GESTURES[buffer[0]]);
     });
     if(isConnected)
     {
         socket.emit('GestureSense',"Arduino BLE Paired Successfully.  You may return to main page.");
     }
- }
+}
+
+function queryAI(qData, socket) {
+
+    // string to be returned
+    var rtrnStr = "";
+
+    // send the string to AI by just calling the python script with the current game state and getting the AI's response
+    var spawn = require("child_process").spawn;
+    var process = spawn('python3',["./inference.py", qData, difficulty] );
+
+    process.stdout.on('data', function(data) {
+        rtrnStr = data.toString();
+        socket.emit("aiReturn", rtrnStr);
+    });
+}
+function queryAI_ttt(qData, socket) {
+
+    // string to be returned
+    var rtrnStr = "";
+
+    // send the string to AI by just calling the python script with the current game state and getting the AI's response
+    var spawn = require("child_process").spawn;
+    var process = spawn( 'python3',["./tictactoe.py", qData, difficulty_ttt] );
+
+    process.stdout.on('data', function(data) {
+        rtrnStr = data.toString();
+        socket.emit("aiReturn_ttt", rtrnStr);
+    });
+}

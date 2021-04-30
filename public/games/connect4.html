@@ -18,17 +18,17 @@
       <div id="content">
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark pe-3 ps-3">
-            <span class="navbar-brand mb-0 h1">Team 10</span>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <span class="navbar-text me-3 text-secondary">Multiplayer Connect4</span>
-                <ul class="navbar-nav ms-auto">
-                    <span class="navbar-text me-3 text-light" id="welcome_message"></span>
-                    <li class="nav-item">
-                        <a role="button" class="btn btn-block btn-danger" onclick="leave_game()">Leave Game<span class="sr-only">(current)</span></a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+              <span class="navbar-brand mb-0 h1">Team 10</span>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <span class="navbar-text me-3 text-secondary">Multiplayer Connect4</span>
+                  <ul class="navbar-nav ms-auto">
+                      <span class="navbar-text me-3 text-light" id="welcome_message"></span>
+                      <li class="nav-item">
+                          <a role="button" class="btn btn-block btn-danger" onclick="leave_game()">Leave Game<span class="sr-only">(current)</span></a>
+                      </li>
+                  </ul>
+              </div>
+          </nav>
         </header>
         <div id = "screen" class="my-3">
             <div class="mb-3">
@@ -101,7 +101,7 @@
                         You will be redirected to main page in 10 seconds.
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-secondary" onclick='location.href = "/";' data-bs-dismiss="modal">Close</button>
                       <button type="button" class="btn btn-primary" onclick='location.href = "/";'>Okay! Go to Main Page.</button>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>IoT Team 10 - Tic-Tac-Toe</title>
+    <title>IoT Team 10 - Connect4 AI</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/public/styles/main_style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -20,35 +20,82 @@
           <nav class="navbar navbar-expand-lg navbar-dark bg-dark pe-3 ps-3">
             <span class="navbar-brand mb-0 h1">Team 10</span>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <span class="navbar-text me-3 text-secondary">Multiplayer Tic-Tac-Toe</span>
+                <span class="navbar-text me-3 text-secondary">Singleplayer Connect4</span>
                 <ul class="navbar-nav ms-auto">
                     <span class="navbar-text me-3 text-light" id="welcome_message"></span>
                     <li class="nav-item">
-                        <a role="button" class="btn btn-block btn-danger" onclick="leave_game()">Leave Game<span class="sr-only">(current)</span></a>
+                        <a role="button" class="btn btn-block btn-danger" onclick="location.href = '/';">Leave Game<span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
             </div>
         </nav>
       </header>
-      <div id = "screen" class="my-5">
+      <div id = "screen" class="my-3">
+        <div id="diffChoices">
+          <h1 class="display-5 text-light text-center">Pick Your Difficulty</h1>
+          <button class="btn btn-primary my-2" onclick="diffSelected('dummy')">Infant</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('easy')">Easy</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('medium')">Medium</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('hard')">Hard</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('expert')">Expert</button>
+        </div>
         <div class="mb-3">
           <h1 id="turn-message" class="display-6 text-light text-center"></h1>
         </div>
-        <div id="ticTacToeBox">
+        <div id="c4Box">
           <div id = "row1" class="row">
               <div id = "r1c1" class = "game"></div>
               <div id = "r1c2" class = "game"></div>
               <div id = "r1c3" class = "game"></div>
+              <div id = "r1c4" class = "game"></div>
+              <div id = "r1c5" class = "game"></div>
+              <div id = "r1c6" class = "game"></div>
+              <div id = "r1c7" class = "game"></div>
           </div>
           <div id = "row2" class="row">
               <div id = "r2c1" class = "game"></div>
               <div id = "r2c2" class = "game"></div>
               <div id = "r2c3" class = "game"></div>
+              <div id = "r2c4" class = "game"></div>
+              <div id = "r2c5" class = "game"></div>
+              <div id = "r2c6" class = "game"></div>
+              <div id = "r2c7" class = "game"></div>
           </div>
           <div id = "row3" class="row">
               <div id = "r3c1" class = "game"></div>
               <div id = "r3c2" class = "game"></div>
               <div id = "r3c3" class = "game"></div>
+              <div id = "r3c4" class = "game"></div>
+              <div id = "r3c5" class = "game"></div>
+              <div id = "r3c6" class = "game"></div>
+              <div id = "r3c7" class = "game"></div>
+          </div>
+          <div id = "row4" class="row">
+              <div id = "r4c1" class = "game"></div>
+              <div id = "r4c2" class = "game"></div>
+              <div id = "r4c3" class = "game"></div>
+              <div id = "r4c4" class = "game"></div>
+              <div id = "r4c5" class = "game"></div>
+              <div id = "r4c6" class = "game"></div>
+              <div id = "r4c7" class = "game"></div>
+          </div>
+          <div id = "row5" class="row">
+            <div id = "r5c1" class = "game"></div>
+            <div id = "r5c2" class = "game"></div>
+            <div id = "r5c3" class = "game"></div>
+            <div id = "r5c4" class = "game"></div>
+            <div id = "r5c5" class = "game"></div>
+            <div id = "r5c6" class = "game"></div>
+            <div id = "r5c7" class = "game"></div>
+          </div>
+          <div id = "row6" class="row">
+            <div id = "r6c1" class = "game"></div>
+            <div id = "r6c2" class = "game"></div>
+            <div id = "r6c3" class = "game"></div>
+            <div id = "r6c4" class = "game"></div>
+            <div id = "r6c5" class = "game"></div>
+            <div id = "r6c6" class = "game"></div>
+            <div id = "r6c7" class = "game"></div>
           </div>
         </div>
       </div>
@@ -70,25 +117,25 @@
         </div>
       </div>
       <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="announcementText">Email Verification</h5>
-              <button type="button" class="btn-close" onclick='sign_out(); window.location.replace("/login");' data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div id="modal-result-message" class="modal-body">
-                Please check your email for your account verification. You cannot login without verifying your account.
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" onclick='sign_out(); window.location.replace("/login");'>Okay! Go to Main Page.</button>
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="announcementText">Email Verification</h5>
+                <button type="button" class="btn-close" onclick='sign_out(); window.location.replace("/login");' data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div id="modal-result-message" class="modal-body">
+                  Please check your email for your account verification. You cannot login without verifying your account.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick='sign_out(); window.location.replace("/login");'>Okay! Go to Main Page.</button>
+              </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
 
-    <script src="/public/js/tictactoe.js"></script>
+    <script src="/public/js/connect4_AI.js"></script>
   </body>
 </html>

@@ -20,17 +20,25 @@
           <nav class="navbar navbar-expand-lg navbar-dark bg-dark pe-3 ps-3">
             <span class="navbar-brand mb-0 h1">Team 10</span>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <span class="navbar-text me-3 text-secondary">Multiplayer Tic-Tac-Toe</span>
+                <span class="navbar-text me-3 text-secondary">Singleplayer Tic-Tac-Toe</span>
                 <ul class="navbar-nav ms-auto">
                     <span class="navbar-text me-3 text-light" id="welcome_message"></span>
                     <li class="nav-item">
-                        <a role="button" class="btn btn-block btn-danger" onclick="leave_game()">Leave Game<span class="sr-only">(current)</span></a>
+                        <a role="button" class="btn btn-block btn-danger" onclick="location.href = '/';">Leave Game<span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
             </div>
         </nav>
       </header>
-      <div id = "screen" class="my-5">
+      <div id = "screen" class="my-3">
+        <div id="diffChoices">
+          <h1 class="display-5 text-light text-center">Pick Your Difficulty</h1>
+          <button class="btn btn-primary my-2" onclick="diffSelected('dummy')">Infant</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('easy')">Easy</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('medium')">Medium</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('hard')">Hard</button>
+          <button class="btn btn-primary my-2" onclick="diffSelected('expert')">Expert</button>
+        </div>
         <div class="mb-3">
           <h1 id="turn-message" class="display-6 text-light text-center"></h1>
         </div>
@@ -70,25 +78,25 @@
         </div>
       </div>
       <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="announcementText">Email Verification</h5>
-              <button type="button" class="btn-close" onclick='sign_out(); window.location.replace("/login");' data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div id="modal-result-message" class="modal-body">
-                Please check your email for your account verification. You cannot login without verifying your account.
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" onclick='sign_out(); window.location.replace("/login");'>Okay! Go to Main Page.</button>
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="announcementText">Email Verification</h5>
+                <button type="button" class="btn-close" onclick='sign_out(); window.location.replace("/login");' data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div id="modal-result-message" class="modal-body">
+                  Please check your email for your account verification. You cannot login without verifying your account.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick='sign_out(); window.location.replace("/login");'>Okay! Go to Main Page.</button>
+              </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
 
-    <script src="/public/js/tictactoe.js"></script>
+    <script src="/public/js/tictactoe_AI.js"></script>
   </body>
 </html>
