@@ -19,7 +19,7 @@ firebase.auth().onAuthStateChanged(function(user) {
 	}
 	else {
         if (pid == "player2") {
-            redirect_player2(user.email);
+            redirect_player2(user.email, user.displayName);
         } else {
             make_visible();
         }
@@ -31,12 +31,13 @@ socket.on("game_ready", (data) => {
     location.href = "/" + data.game;
 });
 
-function redirect_player2(email) {
+function redirect_player2(email, displayName) {
     socket.emit("increment_active_players", {
         "rid": rid,
         "pid": pid,
         "game": game,
-        "email": email
+        "email": email,
+        "displayName": displayName
     });
 }
 

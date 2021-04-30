@@ -247,6 +247,8 @@ function printWin(playerNum)
 		var winner = {
 			'winner': config.player1,
 			'loser': config.player2,
+			'winnerName': config.player1Name,
+			'loserName': config.player2Name,
 			'game': game,
 			'name': 'player1',
 			'rid': rid,
@@ -259,6 +261,8 @@ function printWin(playerNum)
 		var winner = {
 			'winner': config.player2,
 			'loser': config.player1,
+			'winnerName': config.player2Name,
+			'loserName': config.player1Name,
 			'game': game,
 			'name': 'player2',
 			'rid': rid,
@@ -271,6 +275,8 @@ function printWin(playerNum)
 		var draw = {
 			'player1':config.player1,
 			'player2':config.player2,
+			'winnerName': config.player2Name,
+			'loserName': config.player1Name,
 			'game':game,
 			'name':'draw',
 			'rid':rid,
@@ -322,6 +328,8 @@ function leave_game() {
 		var winner = {
 			'winner':config.player2,
 			'loser':config.player1,
+			'winnerName': config.player2Name,
+			'loserName': config.player1Name,
 			'game':game,
 			'name':'player2',
 			'rid':rid
@@ -330,10 +338,12 @@ function leave_game() {
 	else
 	{
 		var winner = {
-			'winner':config.player2,
-			'loser':config.player1,
+			'winner':config.player1,
+			'loser':config.player2,
+			'winnerName': config.player1Name,
+			'loserName': config.player2Name,
 			'game':game,
-			'name':'player2',
+			'name':'player1',
 			'rid':rid
 		};
 	}
@@ -353,7 +363,9 @@ socket.on('tictactoe_game',(data)=>
 {
 	config = {
 		'player1': data.player1,
-		'player2': data.player2
+		'player2': data.player2,
+		'player1Name': data.player1Name,
+		'player2Name': data.player2Name
 	};
 	if (pid == "player1") document.getElementById("turn-message").innerHTML = "Your turn.";
 	else if (pid == "player2") document.getElementById("turn-message").innerHTML = "Opponent's turn.";
