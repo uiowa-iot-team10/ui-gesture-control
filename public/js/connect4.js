@@ -168,12 +168,6 @@ function checkForVictory()
 {
 	var inARow = 0;
 
-	if (totalMoves > 41)
-	{
-		printWin("DRAW");
-		return true;
-	}
-
 	// check vertical win
 	for (i = 0; i < 6; i++)
 	{
@@ -277,6 +271,12 @@ function checkForVictory()
 		}
 	}
 	inARow = 0;
+	
+	if (totalMoves > 41)
+	{
+		printWin("DRAW");
+		return true;
+	}
 
 	return false;
 }

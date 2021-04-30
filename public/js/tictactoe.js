@@ -172,12 +172,6 @@ function checkForVictory()
 {
 	var inARow = 0;
 
-	if (totalMoves > 8)
-	{
-		printWin("DRAW");
-		return true;
-	}
-
 	// check vertical win
 	for (i = 0; i < 3; i++)
 	{
@@ -223,6 +217,14 @@ function checkForVictory()
 	}
 	if (inARow == 3){printWin(playerTurn); return true;}
 	else {inARow = 0;}
+
+	if (totalMoves > 8)
+	{
+		printWin("DRAW");
+		return true;
+	}
+
+	return false;
 }
 
 function checkBox(playerNum, row, col)
