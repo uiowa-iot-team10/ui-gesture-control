@@ -264,6 +264,8 @@ io_client.on('connection', function(socket){
         console.log(data);
         if(!data.draw)
         {
+            var winner_name = "";
+            var loser_name  = "";
             rdb.database.ref(util.format("users/%s", data.winner.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
                 if(data.game == 'connect4')
@@ -278,6 +280,7 @@ io_client.on('connection', function(socket){
                     rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
                     rdb.database.ref(util.format("users/%s/TotalGamesWon",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesWon + 1);
                 }
+                winner_name = snapshot.val().name;
             });
             rdb.database.ref(util.format("users/%s", data.loser.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
@@ -293,9 +296,10 @@ io_client.on('connection', function(socket){
                     rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
                     rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
                 }
+                loser_name = snapshot.val().name;
             });
             rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
-            var status = util.format("%s won against %s in %s!", data.winner, data.loser, data.game);
+            var status = util.format("%s won against %s in %s!", winner_name, loser_name, data.game);
             var postBody = { 'status': status };
 
             oauth.post('https://api.twitter.com/1.1/statuses/update.json',
@@ -311,17 +315,21 @@ io_client.on('connection', function(socket){
         }
         else
         {
+            var winner_name = "";
+            var loser_name  = "";
             rdb.database.ref(util.format("users/%s", data.player1.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
                 rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.player1.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+                winner_name = snapshot.val().name;
             });
 
             rdb.database.ref(util.format("users/%s", data.player2.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
                 rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.player2.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
+                loser_name = snapshot.val().name;
             });
             rdb.database.ref(util.format('rooms/%s/winner',data.rid)).set(data.name);
-            var status = util.format("The match between %s and %s in %s ended in a draw!", data.winner, data.loser, data.game);
+            var status = util.format("The match between %s and %s in %s ended in a draw!", winner_name, loser_name, data.game);
             var postBody = { 'status': status };
 
             oauth.post('https://api.twitter.com/1.1/statuses/update.json',
@@ -340,6 +348,8 @@ io_client.on('connection', function(socket){
 
     socket.on('leaveGame',(data) =>
     {
+        var winner_name = "";
+        var loser_name  = "";
         rdb.database.ref(util.format("users/%s", data.winner.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
                 if(data.game == 'connect4')
@@ -354,6 +364,7 @@ io_client.on('connection', function(socket){
                     rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
                     rdb.database.ref(util.format("users/%s/TotalGamesWon",data.winner.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesWon + 1);
                 }
+                winner_name = snapshot.val().name;
             });
             rdb.database.ref(util.format("users/%s", data.loser.replace(/[.#$\[\]]/g,'-'))).get().then((snapshot) =>
             {
@@ -369,9 +380,10 @@ io_client.on('connection', function(socket){
                     rdb.database.ref(util.format("users/%s/TotalGamesPlayed",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesPlayed + 1);
                     rdb.database.ref(util.format("users/%s/TotalGamesLost",data.loser.replace(/[.#$\[\]]/g,'-'))).set(snapshot.val().TotalGamesLost + 1);
                 }
+                loser_name = snapshot.val().name;
             });
             rdb.database.ref(util.format('rooms/%s/winner', data.rid)).set(data.name);
-            var status = util.format("%s ran away so %s won by default!", data.winner, data.loser, data.game);
+            var status = util.format("%s ran away so %s won by default!", winner_name, loser_name, data.game);
             var postBody = { 'status': status };
 
             oauth.post('https://api.twitter.com/1.1/statuses/update.json',
