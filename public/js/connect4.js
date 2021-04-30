@@ -127,6 +127,9 @@ function setNewFocus(direction)
 		playerTurn = (pid[pid.length - 1] == "1") ? "player2" : "player1";
 		totalMoves += 1;
 
+		if (playerTurn == "player1") document.getElementById("turn-message").innerHTML = "Your turn.";
+		else if (playerTurn == "player2") document.getElementById("turn-message").innerHTML = "Opponent's turn.";
+
 		// row_index back to 0 since you drop from the top in connect 4
 	}
 
@@ -156,6 +159,8 @@ socket.on('move',(data)=>
 				row_index = 0;
 				col_index = 0;
 				playerTurn = pid;
+				if (playerTurn == "player1") document.getElementById("turn-message").innerHTML = "Your turn.";
+				else if (playerTurn == "player2") document.getElementById("turn-message").innerHTML = "Opponent's turn.";
 			}
 		},500);
 	}
@@ -360,7 +365,7 @@ function endGame()
 	},10000);
 	setInterval(function () {
 		timercount--;
-		document.getElementById("modal-result-message").innerHTML = "You will be redirected to main page in " + timercount + " seconds.";
+		if (timercount >= 0) document.getElementById("modal-result-message").innerHTML = "You will be redirected to main page in " + timercount + " seconds.";
 	}, 1000);
 }
 
@@ -403,4 +408,7 @@ socket.on('connect4_game',(data)=>
 		'player1': data.player1,
 		'player2': data.player2
 	};
+
+	if (pid == "player1") document.getElementById("turn-message").innerHTML = "Your turn.";
+	else if (pid == "player2") document.getElementById("turn-message").innerHTML = "Opponent's turn.";
 });
