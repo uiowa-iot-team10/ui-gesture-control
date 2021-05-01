@@ -320,6 +320,18 @@ function endGame()
 }
 
 function leave_game() {
+	var user_info = {};
+	var today = new Date();
+	var dd = String(today.getUTCDate()).padStart(2, '0');
+	var mm = String(today.getUTCMonth() + 1).padStart(2, '0'); //January is 0!
+	var yyyy = today.getUTCFullYear();
+	var h  = String(today.getUTCHours()).padStart(2, '0');
+	var m  = String(today.getUTCMinutes()).padStart(2, '0');
+	var s  = String(today.getUTCSeconds()).padStart(2, '0');
+	var today_unix = Date.UTC(today.getUTCFullYear(),today.getUTCMonth(), today.getUTCDate(), 
+	today.getUTCHours(), today.getUTCMinutes(), today.getUTCSeconds(), today.getUTCMilliseconds());
+	today = mm + '/' + dd + '/' + yyyy + ' ' + h + ':' + m + ':' + s;
+
 	if(pid == 'player1')
 	{
 		var winner = {
@@ -330,6 +342,15 @@ function leave_game() {
 			'game':game,
 			'name':'player2',
 			'rid':rid
+		};
+		user_info = {
+			'user': config.player1,
+			'activity': {
+				'left_game': {
+					'time': today,
+                    'time_unix': today_unix
+				}
+			}
 		};
 	}
 	else
@@ -343,12 +364,52 @@ function leave_game() {
 			'name':'player1',
 			'rid':rid
 		};
+		user_info = {
+			'user': config.player2,
+			'activity': {
+				'left_game': {
+					'time': today,
+                    'time_unix': today_unix
+				}
+			}
+		};
 	}
 	socket.emit('leaveGame',winner);
+	socket.emit("user_data_update", user_info);
 	sessionStorage.removeItem("rid");
 	sessionStorage.removeItem("pid");
 	sessionStorage.removeItem("game");
 	location.href = '/';
+}
+
+function sign_out() {
+	var user = firebase.auth().currentUser;
+    firebase.auth().signOut().then(() => {
+        if (user) {
+            var today = new Date();
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getUTCMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getUTCFullYear();
+            var h  = String(today.getUTCHours()).padStart(2, '0');
+            var m  = String(today.getUTCMinutes()).padStart(2, '0');
+            var s  = String(today.getUTCSeconds()).padStart(2, '0');
+            var today_unix = Date.UTC(today.getUTCFullYear(),today.getUTCMonth(), today.getUTCDate(), 
+            today.getUTCHours(), today.getUTCMinutes(), today.getUTCSeconds(), today.getUTCMilliseconds());
+            today = mm + '/' + dd + '/' + yyyy + ' ' + h + ':' + m + ':' + s;
+            socket.emit("user_data_update", {
+                'user': user.email,
+                'activity': {
+                    'signout': {
+                        'time': today,
+                        'time_unix': today_unix
+                    }
+                }
+            });
+        }
+		window.location.assign("/login");
+	}).catch((error) => {
+		alert("[ERROR] Could not sign out: " + error.message);
+	});
 }
 
 

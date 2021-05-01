@@ -45,17 +45,37 @@ function removeAllChildNodes(parent) {
 }
 
 function create_room() {
-    var d = new Date();
+    var today = new Date();
+    var dd = String(today.getUTCDate()).padStart(2, '0');
+    var mm = String(today.getUTCMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getUTCFullYear();
+    var h  = String(today.getUTCHours()).padStart(2, '0');
+    var m  = String(today.getUTCMinutes()).padStart(2, '0');
+    var s  = String(today.getUTCSeconds()).padStart(2, '0');
+    var today_unix = Date.UTC(today.getUTCFullYear(),today.getUTCMonth(), today.getUTCDate(), 
+    today.getUTCHours(), today.getUTCMinutes(), today.getUTCSeconds(), today.getUTCMilliseconds());
+    today = mm + '/' + dd + '/' + yyyy + ' ' + h + ':' + m + ':' + s;
     var rn = document.querySelector("#room-name");
     var rg = document.querySelector("#room-game");
     var config = {
         'username': firebase.auth().currentUser.email,
         'displayName': firebase.auth().currentUser.displayName,
         'rname': rn.value,
-        'time': d.getTime(),
+        'time': today_unix,
+        'date': today,
         'game': rg.options[rg.selectedIndex].text
     };
     socket.emit("create_room", config);
+    socket.emit("user_data_update", {
+        'user': firebase.auth().currentUser.email,
+        'activity': {
+            'create_room': {
+                'time': today,
+                'time_unix': today_unix,
+                'game': rg.options[rg.selectedIndex].text
+            }
+        }
+    });
 }
 
 var socket = io();

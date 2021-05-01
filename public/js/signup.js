@@ -6,6 +6,8 @@ firebase.auth().onAuthStateChanged(function(user) {
 	}
 });
 
+var socket = io();
+
 function sign_up() {
 	var name     = document.getElementById("name").value;
 	var email    = document.getElementById("email").value;
@@ -21,6 +23,17 @@ function sign_up() {
 			url: "http://raspberrypi.local"
 		};
 		user.sendEmailVerification().then(function() {
+			var today = new Date();
+			var dd = String(today.getUTCDate()).padStart(2, '0');
+			var mm = String(today.getUTCMonth() + 1).padStart(2, '0'); //January is 0!
+			var yyyy = today.getUTCFullYear();
+			var h  = String(today.getUTCHours()).padStart(2, '0');
+			var m  = String(today.getUTCMinutes()).padStart(2, '0');
+			var s  = String(today.getUTCSeconds()).padStart(2, '0');
+			var today_unix = Date.UTC(today.getUTCFullYear(),today.getUTCMonth(), today.getUTCDate(), 
+			today.getUTCHours(), today.getUTCMinutes(), today.getUTCSeconds(), today.getUTCMilliseconds());
+
+			today = mm + '/' + dd + '/' + yyyy + ' ' + h + ':' + m + ':' + s;
 			socket.emit("create_user_database", {
 				'email': email,
 				'name': name,
@@ -30,7 +43,21 @@ function sign_up() {
 				'Connect4Wins': 0,
 				'Connect4Losses': 0,
 				'TicTacToeWins': 0,
-				'TicTacToeLosses': 0
+				'TicTacToeLosses': 0,
+				'created': today,
+				'created_unix': today_unix,
+				'c4Rating': 500,
+				'tttRating': 500,
+				'activity': [{
+					'account_created': {
+						'time': today,
+						'time_unix': today_unix
+					}
+				}],
+				'progress': {
+					'Connect4': [500],
+					'TicTacToe': [500]
+				}
 			});
 			$('#staticBackdrop').modal('toggle');
 		}).catch(function(error) {
@@ -47,7 +74,29 @@ function sign_up() {
 }
 
 function sign_out() {
-	firebase.auth().signOut().then(() => {
+	var user = firebase.auth().currentUser;
+    firebase.auth().signOut().then(() => {
+        if (user) {
+            var today = new Date();
+            var dd = String(today.getUTCDate()).padStart(2, '0');
+            var mm = String(today.getUTCMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getUTCFullYear();
+            var h  = String(today.getUTCHours()).padStart(2, '0');
+            var m  = String(today.getUTCMinutes()).padStart(2, '0');
+            var s  = String(today.getUTCSeconds()).padStart(2, '0');
+            var today_unix = Date.UTC(today.getUTCFullYear(),today.getUTCMonth(), today.getUTCDate(), 
+            today.getUTCHours(), today.getUTCMinutes(), today.getUTCSeconds(), today.getUTCMilliseconds());
+            today = mm + '/' + dd + '/' + yyyy + ' ' + h + ':' + m + ':' + s;
+            socket.emit("user_data_update", {
+                'user': user.email,
+                'activity': {
+                    'signout': {
+                        'time': today,
+                        'time_unix': today_unix
+                    }
+                }
+            });
+        }
 		window.location.assign("/login");
 	}).catch((error) => {
 		alert("[ERROR] Could not sign out: " + error.message);
@@ -70,5 +119,3 @@ function validate_inputs() {
 	passrepeat.setCustomValidity(password.value.length < 6 ? "Passwords should be longer than 6 characters." : "");
 	email.setCustomValidity(ValidateEmail(email.value));
 }
-
-var socket = io();
