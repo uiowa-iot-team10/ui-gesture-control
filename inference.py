@@ -52,7 +52,7 @@ for r_ctr, row in enumerate(data_split):
 
 # Loop through each possible move and decide what's best
 best_move = -1
-best_value = -1
+best_value = -99999
 # Loop only through legal moves
 for move in available_moves(state):
     input_data = state_to_tensor(state, move)
