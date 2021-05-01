@@ -94,6 +94,10 @@ app.get('/stats', (req, res) => {
     res.sendFile(__dirname + '/public/stats.html');
 });
 
+app.get('/leaderboard', (req, res) => {
+    res.sendFile(__dirname + '/public/leaderboard.html');
+});
+
 app.use('/', require(path.join(__dirname, 'history')));
 
 // If path doesn't exists give a message
@@ -124,6 +128,21 @@ io_client.on('connection', function(socket){
                 socket.emit("active_rooms", rooms);
             }
             else socket.emit("active_rooms", null);
+        });
+    });
+
+    socket.on("get_leaderboard", (data) => {
+        rdb.database.ref("users").get().then((snapshot) => {
+            if (snapshot.val()) {
+                var res = [];
+                for (var key in snapshot.val()) {
+                    var user = snapshot.val()[key];
+                    if (data == "connect4" && "c4Rating" in user) res.push([user.c4Rating, user.name]);
+                    else if (data == "tictactoe" && "tttRating" in user) res.push([user.tttRating, user.name]);
+                }
+                res.sort((x,y) => {return y[0] - x[0]});
+                socket.emit("leaderboard", res);
+            }
         });
     });
 
