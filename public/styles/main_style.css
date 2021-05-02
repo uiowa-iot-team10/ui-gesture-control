@@ -197,10 +197,17 @@ a {
     font-size: 3rem;
 }
 
+#activeRoomButtons button:focus{
+    background-color: red;
+}
+
 #diffChoices{
     align-self: center;
     display: flex;
     flex-direction: column;
+}
+#diffChoices button:focus{
+    background-color: red;
 }
 #diffChoices .diffButton{
     margin-bottom: 5%;

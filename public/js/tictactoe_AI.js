@@ -64,69 +64,6 @@ function interpKeydown(e)
 	}
 }
 
-function setNewFocus(direction)
-{
-	if (direction == 'RIGHT')
-	{
-		if (col_index < rows_tracker[row_index].length - 1)
-		{
-			col_index += 1;
-		}
-	}
-	else if (direction == 'LEFT')
-	{
-		if (col_index > 0)
-		{
-			col_index -= 1;
-		}
-	}
-	else if (direction == 'UP')
-	{
-		if (row_index > 0)
-		{
-			row_index -= 1;
-		}
-	}
-	else if (direction == 'DOWN')
-	{
-		if (row_index < rows_tracker.length - 1)
-		{
-			row_index += 1;
-		}
-	}
-	else if (direction == 'INPUT')
-	{
-		if (rows_tracker[row_index][col_index] != 0)
-		{
-			return; // if there is already an X or O there don't let a new one get put down
-		}
-		else if (player == 1)
-		{
-			rows[row_index][col_index].className += " ex";
-			rows_tracker[row_index][col_index] = 1;
-		}
-		else
-		{
-			rows[row_index][col_index].className += " oh";
-			rows_tracker[row_index][col_index] = 2;
-		}
-
-		totalMoves += 1;
-
-		// check for victory on board
-		if (!checkForVictory(row_index, col_index))
-		{
-			// end players turn
-			endTurn();
-		}
-		else{ endGame(); }
-		
-		
-	}
-
-	rows[row_index][col_index].focus();
-}
-
 function checkForVictory(current_row, current_col)
 {
 	var inARow = 0;
@@ -267,6 +204,129 @@ socket.on('aiReturn_ttt', function(data){
 
 document.getElementById("ticTacToeBox").style.display = "none";
 
+var selNum = 0; // current focus for difficulty
+var selecting = true;
+$('#diffChoices button')[selNum].focus();
+
+function setNewFocus(direction)
+{
+	if(selecting)
+	{
+		if(direction == 'UP')
+		{
+			selNum -= 1;
+			if(selNum == -1)
+			{
+				$('#diffChoices button')[0].blur();
+				$('#leaveGameButton').addClass('btn-outline-primary');
+			}
+			else
+			{
+				$('#diffChoices button')[selNum+1].blur();
+				$('#diffChoices button')[selNum].focus();
+			}
+		}
+		if(direction == 'DOWN')
+		{
+			if(selNum == -1)
+			{
+				$('#leaveGameButton').removeClass('btn-outline-primary')
+			}
+			selNum += 1;
+			if(selNum == 5)
+			{
+				selNum -= 1;
+				$('#diffChoices button')[selNum].focus();
+			}
+			else
+			{
+				if(selNum != 0)
+				{
+					$('#diffChoices button')[selNum-1].blur();
+					$('#diffChoices button')[selNum].focus();
+				}
+				else
+				{
+					$('#diffChoices button')[selNum].focus();
+				}
+				
+			}
+		}
+		if(direction == 'INPUT')
+		{
+			if(selNum == -1)
+			{
+				$('#leaveGameButton').click();
+			}
+			else
+			{
+				$('#diffChoices button')[selNum].click();
+			}
+		}
+		
+	}
+	else
+	{
+		if (direction == 'RIGHT')
+		{
+			if (col_index < rows_tracker[row_index].length - 1)
+			{
+				col_index += 1;
+			}
+		}
+		else if (direction == 'LEFT')
+		{	
+			if (col_index > 0)
+			{
+				col_index -= 1;
+			}
+		}
+		else if (direction == 'UP')
+		{
+			if (row_index > 0)
+			{
+				row_index -= 1;
+			}
+		}
+		else if (direction == 'DOWN')
+		{
+			if (row_index < rows_tracker.length - 1)
+			{
+				row_index += 1;
+			}
+		}
+		else if (direction == 'INPUT')
+		{
+			if (rows_tracker[row_index][col_index] != 0)
+			{
+				return; // if there is already an X or O there don't let a new one get put down
+			}
+			else if (player == 1)
+			{
+				rows[row_index][col_index].className += " ex";
+				rows_tracker[row_index][col_index] = 1;
+			}
+			else
+			{
+				rows[row_index][col_index].className += " oh";
+				rows_tracker[row_index][col_index] = 2;
+			}
+
+			totalMoves += 1;
+
+			// check for victory on board
+			if (!checkForVictory(row_index, col_index))
+			{
+				// end players turn
+				endTurn();
+			}
+			else{ endGame(); }	
+		}
+
+		rows[row_index][col_index].focus();
+	}
+}
+
 function diffSelected(diff)
 {
 	difficulty = diff;
@@ -274,4 +334,5 @@ function diffSelected(diff)
 	document.getElementById("diffChoices").style.display = "none";
 	document.getElementById("ticTacToeBox").style.display = "initial";
 	document.getElementById("turn-message").innerHTML = "Your Turn.";
+	selecting = false;
 }

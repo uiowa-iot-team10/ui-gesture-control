@@ -17,6 +17,172 @@ firebase.auth().onAuthStateChanged(function(user) {
 var socket = io();
 
 
+buttons = ['homeButton','navbarDropdownMenuLink','myModal','statsButton','navbarDropdownMenuLink3','navbarDropdownMenuLink2'];
+var i = 0;
+function setNewFocus(direction){
+    var currentLocation = $('#'+buttons[i]).attr('class');
+    
+    // single player selection
+    if(buttons[i] == 'navbarDropdownMenuLink' && currentLocation == 'nav-link dropdown-toggle active clicked'){
+        if(direction == 'RIGHT'){
+            $('#singleTTT').attr('class','dropdown-item');
+            $('#singleC4').attr('class','dropdown-item active');
+        }
+        if(direction == 'LEFT'){
+            $('#singleTTT').attr('class','dropdown-item active');
+            $('#singleC4').attr('class','dropdown-item');
+        }
+        if(direction == 'INPUT'){
+            if($('#singleTTT').attr('class') == 'dropdown-item active'){
+                $('#singleTTT')[0].click();
+            } 
+            else{
+                $('#singleC4')[0].click();
+            }
+        }
+        if(direction == 'UP'){
+            $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active'); 
+            $('#singleTTT').attr('class','dropdown-item');
+            $('#singleC4').attr('class','dropdown-item');
+            $('#'+buttons[i]).blur();
+            document.getElementById('singlePlayerDropdown').classList.remove('show');  
+        }
+    }
+     // leaderboard selection
+    else if(buttons[i] == 'navbarDropdownMenuLink3' && currentLocation == 'nav-link dropdown-toggle active clicked'){
+        if(direction == 'RIGHT'){
+            $('#leaderTTT').attr('class','dropdown-item');
+            $('#leaderC4').attr('class','dropdown-item active');
+        }
+        if(direction == 'LEFT'){
+            $('#leaderTTT').attr('class','dropdown-item active');
+            $('#leaderC4').attr('class','dropdown-item');
+        }
+        if(direction == 'INPUT'){
+            if($('#leaderTTT').attr('class') == 'dropdown-item active'){
+                $('#leaderTTT')[0].click();
+            } 
+            else{
+                $('#leaderC4')[0].click();
+            }
+        }
+        if(direction == 'UP'){
+            $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active'); 
+            $('#leaderTTT').attr('class','dropdown-item');
+            $('#leaderC4').attr('class','dropdown-item');
+            $('#'+buttons[i]).blur();
+            document.getElementById('leaderboardDropdown').classList.remove('show');  
+        }
+    }
+    // settings selection
+    else if(buttons[i] == 'navbarDropdownMenuLink2' && currentLocation == 'nav-link dropdown-toggle active clicked') {
+        if(direction == 'RIGHT'){
+            $('#bluetoothSetting').attr('class','dropdown-item');
+            $('#signOutSetting').attr('class','dropdown-item active');
+        }
+        if(direction == 'LEFT'){
+            $('#bluetoothSetting').attr('class','dropdown-item active');
+            $('#signOutSetting').attr('class','dropdown-item');
+        }
+        if(direction == 'INPUT'){
+            if($('#bluetoothSetting').attr('class') == 'dropdown-item active'){
+                $('#bluetoothSetting')[0].click();
+            } 
+            else{
+                $('#signOutSetting')[0].click();
+            }
+        }
+        if(direction == 'UP'){
+            $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active'); 
+            $('#bluetoothSetting').attr('class','dropdown-item');
+            $('#signOutSetting').attr('class','dropdown-item');
+            $('#'+buttons[i]).blur();
+            document.getElementById('settingsDropdown').classList.remove('show');  
+        }
+    }
+    else{
+        if (direction == 'RIGHT'){
+            i += 1;
+            if(i == 6){
+                i -= 1;
+                $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active');
+            }
+            else{
+                // single player button
+                if(buttons[i] == 'navbarDropdownMenuLink') {
+                    $('#'+buttons[i-1]).attr('class','nav-link');
+                    $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active');
+                }
+                // create room button
+                else if(buttons[i] == 'myModal') {
+                    $('#'+buttons[i-1]).attr('class','nav-link dropdown-toggle');
+                    $('#'+buttons[i]).attr('class','nav-link active');
+                }
+                else if(buttons[i] == 'statsButton'){
+                    $('#'+buttons[i-1]).attr('class','nav-link');
+                    $('#'+buttons[i]).attr('class','nav-link active');
+                }
+                // leaderboard button
+                else if(buttons[i] == 'navbarDropdownMenuLink3') {
+                    $('#'+buttons[i-1]).attr('class','nav-link');
+                    $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active');
+                }
+                // settings button
+                else if(buttons[i] == 'navbarDropdownMenuLink2') {
+                    $('#'+buttons[i-1]).attr('class','nav-link');
+                    $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active');
+                }
+            } 
+        }
+        if (direction == 'LEFT'){
+            i -= 1;
+            if(i == -1){
+                i += 1;
+                $('#'+buttons[i]).attr('class','nav-link active');
+            }
+            else{
+                if(buttons[i] == 'navbarDropdownMenuLink'){
+                    $('#'+buttons[i+1]).attr('class','nav-link');
+                    $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active');
+                }
+                else if(buttons[i] == 'myModal'){
+                    $('#'+buttons[i+1]).attr('class','nav-link');
+                    $('#'+buttons[i]).attr('class','nav-link active');
+                }
+                else if(buttons[i] == 'statsButton'){
+                    $('#'+buttons[i+1]).attr('class','nav-link dropdown-toggle');
+                    $('#'+buttons[i]).attr('class','nav-link active');
+                }
+                else if(buttons[i] == 'homeButton'){
+                    $('#'+buttons[i+1]).attr('class','nav-link dropdown-toggle');
+                    $('#'+buttons[i]).attr('class','nav-link active');
+                }
+                else if(buttons[i] == 'navbarDropdownMenuLink3'){
+                    $('#'+buttons[i+1]).attr('class','nav-link dropdown-toggle');
+                    $('#'+buttons[i]).attr('class','nav-link active');
+                }
+            }
+        }
+        if(direction == 'INPUT'){
+            $('#'+buttons[i])[0].click();
+            if(buttons[i] == 'navbarDropdownMenuLink'){
+                $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active clicked');
+            }
+            if(buttons[i] == 'navbarDropdownMenuLink2'){
+                $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active clicked');
+            }
+            if(buttons[i] == 'navbarDropdownMenuLink3'){
+                $('#'+buttons[i]).attr('class','nav-link dropdown-toggle active clicked');
+            }
+        }
+    }
+}
+
+socket.on('gesture', function(data){
+    console.log(data);
+    setNewFocus(data);
+});
+
 socket.on("room_ready", (data) => {
     sessionStorage.setItem("rid", data.rid);
     sessionStorage.setItem("pid", data.pid);
@@ -114,16 +280,24 @@ socket.on('send_user_game_data', (data) =>
 
 function drawChart()
 {
-    var data = google.visualization.arrayToDataTable([
-    ['Task','Win/Loss Ratio'],
-    ['Wins', parseInt($('#total_games_won').html())],
-    ['Losses', parseInt($('#total_games_lost').html())]
-    ]);
-    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-    var options = {is3D: true, backgroundColor: 'transparent',colors:['blue','red'],legend:{alignment: 'center', position: 'bottom', textStyle: {color:'white',fontSize:16}},chartArea:{width:'100%',height:'70%',right:10}};
-    chart.draw(data,options);
-    console.log(user_data);
-
+    if(parseInt($('#total_games_won').html()) || parseInt($('#total_games_lost').html()))
+    {
+        var data = google.visualization.arrayToDataTable([
+            ['Task','Win/Loss Ratio'],
+            ['Wins', parseInt($('#total_games_won').html())],
+            ['Losses', parseInt($('#total_games_lost').html())]
+            ]);
+            var chart= new google.visualization.PieChart(document.getElementById('piechart'));
+            var options = {is3D: true, backgroundColor: 'transparent',colors:['blue','red'],legend:{alignment: 'center', position: 'bottom', textStyle: {color:'white',fontSize:16}},chartArea:{width:'100%',height:'70%',right:10}};
+            chart.draw(data,options);
+            console.log(user_data);
+    }
+    else
+    {
+        document.getElementById('piechartdiv').style.display = 'none';
+        document.getElementById('curve_chartdiv').classList.remove('me-auto');  
+        document.getElementById('curve_chartdiv').classList.add('mx-auto'); 
+    }
     var progress = [['X', 'Connect4', 'Tic-Tac-Toe']];
     var last_c4Rating = 0;
     for (var i = 0; i < user_data["Connect4"].length; i++)

@@ -572,7 +572,7 @@ async function setBLE(address, socket) {
     movementChar.on( 'valuechanged', buffer =>
     {
         console.log('[LOG] Data is received from Arduino: ' + GESTURES[buffer[0]]);
-        socket.emit("gesture",GESTURES[buffer[0]]);
+        io_client.sockets.emit("gesture",GESTURES[buffer[0]]);
     });
     if(isConnected)
     {

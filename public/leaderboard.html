@@ -38,42 +38,42 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                  <a class="nav-link" href="/">Home</a>
+                  <a id='homeButton' class="nav-link" href="/">Home</a>
                 </li>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Single-player
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                    <li><a class="dropdown-item" href="/tic-tac-toe-AI">Tic-Tac-Toe</a></li>
-                    <li><a class="dropdown-item" href="/connect4-AI">Connect4</a></li>
+                  <ul id='singlePlayerDropdown' class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a id='singleTTT' class="dropdown-item" href="/tic-tac-toe-AI">Tic-Tac-Toe</a></li>
+                    <li><a id='singleC4' class="dropdown-item" href="/connect4-AI">Connect4</a></li>
                   </ul>
                 </li>
                 <li class="nav-item">
                   <a id = 'myModal' role="button" class="nav-link" data-bs-toggle="modal" data-bs-target="#modalCreateRoomForm">Create a Room</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/stats">Stats</a>
+                  <a id='statsButton' class="nav-link" href="/stats">Stats</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Leaderboard <span class="sr-only">(current)</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink3">
-                      <li><a class="dropdown-item" href="/leaderboard?game=tictactoe">Tic-Tac-Toe</a></li>
-                      <li><a class="dropdown-item" href="/leaderboard?game=connect4">Connect4</a></li>
+                    <ul id='leaderboardDropdown' class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink3">
+                      <li><a id='leaderTTT' class="dropdown-item" href="/leaderboard?game=tictactoe">Tic-Tac-Toe</a></li>
+                      <li><a id='leaderC4'  class="dropdown-item" href="/leaderboard?game=connect4">Connect4</a></li>
                     </ul>
                 </li>
               </ul>
               <span class="navbar-text me-3 text-light" id="welcome_message"></span>
               <ul class="navbar-nav">
                 <li class="nav-item dropdown dropstart">
-                  <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Settings
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink2">
-                    <li><a class="dropdown-item" href="/bluetooth">Bluetooth Controller Settings</a></li>
-                    <li><a role="button" class="dropdown-item" onclick="sign_out()" > Sign Out </a></li>
+                  <ul id='settingsDropdown' class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink2">
+                    <li><a id='bluetoothSetting' class="dropdown-item" href="/bluetooth">Bluetooth Controller Settings</a></li>
+                    <li><a id='signOutSetting' role="button" class="dropdown-item" onclick="sign_out()" > Sign Out </a></li>
                   </ul>
                 </li>
               </ul>

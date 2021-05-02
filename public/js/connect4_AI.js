@@ -69,72 +69,72 @@ function interpKeydown(e)
 	}
 }
 
-function setNewFocus(direction)
-{
-	if (direction == 'RIGHT' && player == player_turn)
-	{
-		if (col_index < rows[row_index].length - 1)
-		{
-			col_index += 1;
-		}
-	}
-	else if (direction == 'LEFT' && player == player_turn)
-	{
-		if (col_index > 0)
-		{
-			col_index -= 1;
-		}
-	}
-	else if (direction == 'INPUT' && player == player_turn)
-	{
-		if (rows_tracker[row_index][col_index] != 0)
-		{
-			return; // if there is already a chip there put neither and let user continue turn
-		}
+// function setNewFocus(direction)
+// {
+// 	if (direction == 'RIGHT' && player == player_turn)
+// 	{
+// 		if (col_index < rows[row_index].length - 1)
+// 		{
+// 			col_index += 1;
+// 		}
+// 	}
+// 	else if (direction == 'LEFT' && player == player_turn)
+// 	{
+// 		if (col_index > 0)
+// 		{
+// 			col_index -= 1;
+// 		}
+// 	}
+// 	else if (direction == 'INPUT' && player == player_turn)
+// 	{
+// 		if (rows_tracker[row_index][col_index] != 0)
+// 		{
+// 			return; // if there is already a chip there put neither and let user continue turn
+// 		}
 
-		// Find which row/col to put circle in
-		for (i = 0; i < rows_tracker.length; i++)
-		{
-			if (i == (rows_tracker.length - 1))
-			{
-				row_index = i;
-				break;
-			}
-			else if (rows_tracker[i+1][col_index] != 0)
-			{
-				row_index = i;
-				break;
-			}
-		}
+// 		// Find which row/col to put circle in
+// 		for (i = 0; i < rows_tracker.length; i++)
+// 		{
+// 			if (i == (rows_tracker.length - 1))
+// 			{
+// 				row_index = i;
+// 				break;
+// 			}
+// 			else if (rows_tracker[i+1][col_index] != 0)
+// 			{
+// 				row_index = i;
+// 				break;
+// 			}
+// 		}
 
-		if (player == 1)
-		{
-			rows[row_index][col_index].className += " p1";
-			rows_tracker[row_index][col_index] = 1;
-		}
-		else
-		{
-			rows[row_index][col_index].className += " p2";
-			rows_tracker[row_index][col_index] = 2;
-		}
+// 		if (player == 1)
+// 		{
+// 			rows[row_index][col_index].className += " p1";
+// 			rows_tracker[row_index][col_index] = 1;
+// 		}
+// 		else
+// 		{
+// 			rows[row_index][col_index].className += " p2";
+// 			rows_tracker[row_index][col_index] = 2;
+// 		}
 
-		totalMoves += 1;
+// 		totalMoves += 1;
 
-		// if no victory on board, end players turn
-		if(!checkForVictory(row_index, col_index))
-		{
-			endTurn();
-		}
+// 		// if no victory on board, end players turn
+// 		if(!checkForVictory(row_index, col_index))
+// 		{
+// 			endTurn();
+// 		}
 
-		if (player_turn == 1) { player_turn = 2; }
-		else if (player_turn == 2) { player_turn = 1; }
+// 		if (player_turn == 1) { player_turn = 2; }
+// 		else if (player_turn == 2) { player_turn = 1; }
 
-		// row_index back to 0 since you drop from the top in connect 4
-		row_index = 0;
-	}
+// 		// row_index back to 0 since you drop from the top in connect 4
+// 		row_index = 0;
+// 	}
 
-	rows[row_index][col_index].focus();
-}
+// 	rows[row_index][col_index].focus();
+// }
 
 function checkForVictory(current_row, current_col)
 {
@@ -278,6 +278,133 @@ socket.on('aiReturn', function(data){
 
 document.getElementById("c4Box").style.display = "none";
 
+var selNum = 0; // current focus for difficulty
+var selecting = true;
+$('#diffChoices button')[selNum].focus();
+
+function setNewFocus(direction)
+{
+	if(selecting)
+	{
+		if(direction == 'UP')
+		{
+			selNum -= 1;
+			if(selNum == -1)
+			{
+				$('#diffChoices button')[0].blur();
+				$('#leaveGameButton').addClass('btn-outline-primary');
+			}
+			else
+			{
+				$('#diffChoices button')[selNum+1].blur();
+				$('#diffChoices button')[selNum].focus();
+			}
+		}
+		if(direction == 'DOWN')
+		{
+			if(selNum == -1)
+			{
+				$('#leaveGameButton').removeClass('btn-outline-primary')
+			}
+			selNum += 1;
+			if(selNum == 5)
+			{
+				selNum -= 1;
+				$('#diffChoices button')[selNum].focus();
+			}
+			else
+			{
+				if(selNum != 0)
+				{
+					$('#diffChoices button')[selNum-1].blur();
+					$('#diffChoices button')[selNum].focus();
+				}
+				else
+				{
+					$('#diffChoices button')[selNum].focus();
+				}
+				
+			}
+		}
+		if(direction == 'INPUT')
+		{
+			if(selNum == -1)
+			{
+				$('#leaveGameButton').click();
+			}
+			else
+			{
+				$('#diffChoices button')[selNum].click();
+			}
+		}
+	}
+	else
+	{
+		if (direction == 'RIGHT' && player == player_turn)
+		{
+			if (col_index < rows[row_index].length - 1)
+			{
+				col_index += 1;
+			}
+		}
+		else if (direction == 'LEFT' && player == player_turn)
+		{
+			if (col_index > 0)
+			{
+				col_index -= 1;
+			}
+		}
+		else if (direction == 'INPUT' && player == player_turn)
+		{
+			if (rows_tracker[row_index][col_index] != 0)
+			{
+				return; // if there is already a chip there put neither and let user continue turn
+			}
+
+			// Find which row/col to put circle in
+			for (i = 0; i < rows_tracker.length; i++)
+			{
+				if (i == (rows_tracker.length - 1))
+				{
+					row_index = i;
+					break;
+				}
+				else if (rows_tracker[i+1][col_index] != 0)
+				{
+					row_index = i;
+					break;
+				}
+			}
+			if (player == 1)
+			{
+				rows[row_index][col_index].className += " p1";
+				rows_tracker[row_index][col_index] = 1;
+			}
+			else
+			{
+				rows[row_index][col_index].className += " p2";
+				rows_tracker[row_index][col_index] = 2;
+			}
+
+			totalMoves += 1;
+
+			// if no victory on board, end players turn
+			if(!checkForVictory(row_index, col_index))
+			{
+				endTurn();
+			}
+
+			if (player_turn == 1) { player_turn = 2; }
+			else if (player_turn == 2) { player_turn = 1; }
+
+			// row_index back to 0 since you drop from the top in connect 4
+			row_index = 0;
+		}
+		rows[row_index][col_index].focus();
+	}
+}
+
+
 function diffSelected(diff)
 {
 	difficulty = diff;
@@ -285,4 +412,5 @@ function diffSelected(diff)
 	document.getElementById("diffChoices").style.display = "none";
 	document.getElementById("c4Box").style.display = "initial";
 	document.getElementById("turn-message").innerHTML = "Your Turn.";
+	selecting = false;
 }
