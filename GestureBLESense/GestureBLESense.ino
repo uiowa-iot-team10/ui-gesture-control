@@ -34,7 +34,7 @@ BLEIntCharacteristic movementChar("19B10012-E8F2-537E-4F6C-D104768A1214",BLEWrit
 
 void setup() {
   Serial.begin(9600);
-   while (!Serial);
+  // while (!Serial);
 
   // begin initialization
   if (!BLE.begin()) {

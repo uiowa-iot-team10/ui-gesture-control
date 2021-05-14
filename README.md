@@ -1,12 +1,7 @@
 # ui-gesture-control
-User Interface controlling via Ardunio Nano 33 BLE Gesture Sensor
+At a high level, this project developed a video game platform, enabling users to play various games, including Connect 4 and Tic-tac-toe. To interact with our system, the players optionally use a Raspberry Pi and Arduino device to control the graphical user interface using the gesture sensor embedded inside the Arduino Nano 33 BLE. In this platform, the user can play against another human (PvP) or they can play against various AIs ranging in difficulty. 
 
-## Requirements
-
-- NodeJS
-- Python3
-- BlueZ && Bleak
-- Tmux
+Pi vs Pi or PvP for short, is a Node JS application run on the Raspberry Pi which allows it to act as a gaming console. The motivation behind this project was as simple as creating a fun platform to play games on using the hardware from the class labs. As the name suggests, users running the same application are able to play against one another or an AI via the user interface. This interface is controlled by an Arduino Nano BLE Sense and connected to the Pi through Bluetooth.
 
 ## Installation
 
@@ -18,30 +13,14 @@ First of all install the dependencies for Python:
 $ sudo -H python3 -m pip install -r requirements.txt
 ```
 
-### BlueZ && Bleak
-
-First install the following dependencies for Python:
-
-```bash
-$ sudo apt-get install libdbus-1-dev libusb-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
-```
-
-
-Install Latest BlueZ:
+#### Tensorflow-light Installation on Pi
+Run the following commands on your Pi to install tensorflow-light.
 
 ```bash
-$ wget www.kernel.org/pub/linus/bluetooth/bluez-5.50.tar.xz
-$ tar xvf bluez-5.50.tar.xz && cd bluez-5.50
-$ ./configure --prefix=/usr --mandir=/usr/share/man --sysconfdir=/etc --localstatedir=/var --enable-experimental
-$ make -j4
-$ sudo make install
-$ sudo reboot
-```
-
-Now you can install the Bleak library:
-
-```bash
-$ sudo -H python3 -m pip install bleak
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install python3-tflite-runtime
 ```
 
 ### NodeJS
@@ -60,27 +39,24 @@ Install Tmux:
 $ sudo apt-get install tmux
 ```
 
+### Arduino Code - Library - Update
+1. Locate the Arduino library Arduino_APDS9960 on your computer.
+2. Navigate to `Arduino_APDS9960.cpp` and add the following code after line 313 `if ((totalY <= 10 && totalY >= -10) && (totalX <= 10 && totalX >= -10))   { _detectedGesture = GESTURE_NEAR; }`
+3. Navigate to `Arduino_APDS9960.h` and add the following code after line 31 `GESTURE_NEAR = 4`
+
 ## Run
 
 1. Create a Tmux window: `$ tmux new -s server`
-2. You have to start server first: `$ sudo node app.js`
+2. You have to start the NodeJS server: `$ sudo node app.js`
 3. `CTRL + B`, then `D`. (Deattaching)
-4. Then, you can go to `http://localhost` from your browser.
-5. Create another Tmux window: `$ tmux new -s script`
-6. Run the gesture script `$ python3 blconnect.py` or `$ ./blconnect.py`
-7. `CTRL + B`, then `D`. (Deattaching)
+4. Then, you can go to `http://localhost` from your browser or you can go `http://raspberrypi.local` from a different device connected to same network with Pi.
 
-Now, you should be able to see both Server and Script connected on the browser, and every gesture should appear on the webpage. (UP, DOWN, LEFT or RIGHT)
+Now, you should be able to access to your PvP system.
 
-In order to connect back (attach) to Tmux windows: `$ tmux a -t server` or `$ tmux a -t script`
+In order to connect back (attach) to Tmux windows: `$ tmux a -t server`
 
-To close the Tmux windows (If you really want to terminate server or script):
+To close the Tmux window:
 
 1. Attach the window: `$ tmux a -t server`
 2. `CTRL + C`, to kill the process.
 3. `CTRL + D`, to terminate the Tmux window.
-
-## ARDUINO CODE UPDATE
-1. Locate the Arduino library Arduino_APDS9960 on your computer.
-2. Navigate to `Arduino_APDS9960.cpp` and add the following code after line 313 `if ((totalY <= 10 && totalY >= -10) && (totalX <= 10 && totalX >= -10))   { _detectedGesture = GESTURE_NEAR; }`
-3. Navigate to `Arduino_APDS9960.h` and add the following code after line 31 `GESTURE_NEAR = 4`
